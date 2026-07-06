@@ -213,15 +213,23 @@ impl TerminalWidth {
 impl RowThreshold {
     fn deduce<V: Vars>(vars: &V) -> Result<Self, OptionsError> {
         if let Some(columns) = vars
-            .get_with_fallback(vars::EZA_GRID_ROWS, vars::EXA_GRID_ROWS)
+            .get_with_fallbacks(&[
+                vars::EVA_GRID_ROWS,
+                vars::EZA_GRID_ROWS,
+                vars::EXA_GRID_ROWS,
+            ])
             .and_then(|s| s.into_string().ok())
         {
             match columns.parse() {
                 Ok(rows) => Ok(Self::MinimumRows(rows)),
                 Err(e) => {
                     let source = NumberSource::Env(
-                        vars.source(vars::EZA_GRID_ROWS, vars::EXA_GRID_ROWS)
-                            .unwrap(),
+                        vars.source_with_fallbacks(&[
+                            vars::EVA_GRID_ROWS,
+                            vars::EZA_GRID_ROWS,
+                            vars::EXA_GRID_ROWS,
+                        ])
+                        .unwrap(),
                     );
                     Err(OptionsError::FailedParse(columns, source, e))
                 }
@@ -256,7 +264,11 @@ impl Columns {
         let time_types = TimeTypes::deduce(matches)?;
 
         let no_git_env = vars
-            .get_with_fallback(vars::EXA_OVERRIDE_GIT, vars::EZA_OVERRIDE_GIT)
+            .get_with_fallbacks(&[
+                vars::EVA_OVERRIDE_GIT,
+                vars::EZA_OVERRIDE_GIT,
+                vars::EXA_OVERRIDE_GIT,
+            ])
             .is_some();
 
         let git = matches.get_flag("git") && !matches.get_flag("no-git") && !no_git_env;
@@ -500,14 +512,17 @@ impl TimeTypes {
 
 impl ColorScaleOptions {
     pub fn deduce<V: Vars>(matches: &ArgMatches, vars: &V) -> Self {
-        let min_luminance =
-            match vars.get_with_fallback(vars::EZA_MIN_LUMINANCE, vars::EXA_MIN_LUMINANCE) {
-                Some(var) => match var.to_string_lossy().parse() {
-                    Ok(luminance) if (-100..=100).contains(&luminance) => luminance,
-                    _ => 40,
-                },
-                None => 40,
-            };
+        let min_luminance = match vars.get_with_fallbacks(&[
+            vars::EVA_MIN_LUMINANCE,
+            vars::EZA_MIN_LUMINANCE,
+            vars::EXA_MIN_LUMINANCE,
+        ]) {
+            Some(var) => match var.to_string_lossy().parse() {
+                Ok(luminance) if (-100..=100).contains(&luminance) => luminance,
+                _ => 40,
+            },
+            None => 40,
+        };
 
         let mode = match matches.get_one("color-scale-mode").unwrap() {
             ColorScaleModeArgs::Fixed => ColorScaleMode::Fixed,

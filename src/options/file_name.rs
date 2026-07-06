@@ -49,7 +49,9 @@ impl Classify {
 
 impl ShowIcons {
     pub fn deduce<V: Vars>(matches: &ArgMatches, vars: &V) -> Result<Self, OptionsError> {
-        let force_icons = vars.get(vars::EZA_ICONS_AUTO).is_some();
+        let force_icons = vars
+            .get_with_fallbacks(&[vars::EVA_ICONS_AUTO, vars::EZA_ICONS_AUTO])
+            .is_some();
         let mode_opt = &matches.get_one("icons");
         if !force_icons && mode_opt.is_none() {
             return Ok(Self::Never);
@@ -64,15 +66,23 @@ impl ShowIcons {
 
     fn get_width<V: Vars>(vars: &V) -> Result<u32, OptionsError> {
         if let Some(columns) = vars
-            .get_with_fallback(vars::EXA_ICON_SPACING, vars::EZA_ICON_SPACING)
+            .get_with_fallbacks(&[
+                vars::EVA_ICON_SPACING,
+                vars::EZA_ICON_SPACING,
+                vars::EXA_ICON_SPACING,
+            ])
             .map(|s| s.to_string_lossy().to_string())
         {
             match columns.parse() {
                 Ok(width) => Ok(width),
                 Err(e) => {
                     let source = NumberSource::Env(
-                        vars.source(vars::EXA_ICON_SPACING, vars::EZA_ICON_SPACING)
-                            .unwrap_or("1"),
+                        vars.source_with_fallbacks(&[
+                            vars::EVA_ICON_SPACING,
+                            vars::EZA_ICON_SPACING,
+                            vars::EXA_ICON_SPACING,
+                        ])
+                        .unwrap_or("1"),
                     );
                     Err(OptionsError::FailedParse(columns.clone(), source, e))
                 }
@@ -191,7 +201,7 @@ mod tests {
     #[test]
     fn deduce_show_icons_never_no_arg_env() {
         let mut vars = MockVars::default();
-        vars.set(vars::EZA_ICONS_AUTO, &OsString::from("1"));
+        vars.set(vars::EVA_ICONS_AUTO, &OsString::from("1"));
         assert_eq!(
             ShowIcons::deduce(&mock_cli(vec![""]), &vars),
             Ok(ShowIcons::Automatic(1))
@@ -234,7 +244,7 @@ mod tests {
     #[test]
     fn deduce_show_icons_width() {
         let mut vars = MockVars::default();
-        vars.set(vars::EZA_ICON_SPACING, &OsString::from("3"));
+        vars.set(vars::EVA_ICON_SPACING, &OsString::from("3"));
         assert_eq!(
             ShowIcons::deduce(&mock_cli(vec!["--icons"]), &vars),
             Ok(ShowIcons::Automatic(3))
@@ -244,10 +254,10 @@ mod tests {
     #[test]
     fn deduce_show_icons_width_error() {
         let mut vars = MockVars::default();
-        vars.set(vars::EZA_ICON_SPACING, &OsString::from("foo"));
+        vars.set(vars::EVA_ICON_SPACING, &OsString::from("foo"));
 
         let e: Result<i64, ParseIntError> = vars
-            .get(vars::EZA_ICON_SPACING)
+            .get(vars::EVA_ICON_SPACING)
             .unwrap()
             .to_string_lossy()
             .parse();
@@ -256,7 +266,7 @@ mod tests {
             ShowIcons::deduce(&mock_cli(vec!["--icons", "auto"]), &vars),
             Err(OptionsError::FailedParse(
                 String::from("foo"),
-                NumberSource::Env(vars::EXA_ICON_SPACING),
+                NumberSource::Env(vars::EVA_ICON_SPACING),
                 e.unwrap_err()
             ))
         );

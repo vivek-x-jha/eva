@@ -1,34 +1,15 @@
-<!--
-SPDX-FileCopyrightText: 2024 Christina Sørensen, Martin Fillon
-SPDX-FileContributor: Christina Sørensen
+# Testing eva
 
-SPDX-License-Identifier: EUPL-1.2
--->
-# Testing eza
+`eva` uses the upstream eza Rust test suite plus fork-specific tests for config and theme behavior.
 
-## Running tests
+Useful local checks:
 
-In order to run the tests in eza you need:
-- [just](https://github.com/casey/just)
-- [nix](https://nixos.org)
+```sh
+cargo fmt
+cargo test
+cargo build --release
+```
 
-then either run:
-- `just itest`
-- `nix build -L trycmd-local`
+CLI tests use `trycmd` fixtures under `tests/cmd` and should refer to the `eva` binary.
 
-## Modifying tests
-
-In order to test your changes on eza, you will need to do one or multiple things in different cases.
-You will need the additional tool
-- [powertest](https://github.com/eza-community/powertest)
-
-You will also need to modify the `devtools/dir-generator.sh` file if you want to add some test cases
-
-### You added/modified an option
-
-Please run `just regen` to regenerate powertesting. Then look into `tests/gen` or `tests/cmd` for any tests not passing
-
-### You changed the output of eza
-
-Please run `nix build -L trydump` or `just idump`
-And lookout for any test no longer passing
+When updating output fixtures, build first and use `devtools/generate-trycmd-test.sh`.

@@ -1,6 +1,6 @@
-% eza_colors(5) $version
+% eva_colors(5) $version
 
-<!-- This is the eza_colors(5) man page, written in Markdown. -->
+<!-- This is the eva_colors(5) man page, written in Markdown. -->
 <!-- To generate the roff version, run `just man`, -->
 <!-- and the man page will appear in the ‘target’ directory. -->
 
@@ -8,13 +8,13 @@
 NAME
 ====
 
-eza_colors — customising the file and UI colours of eza
+eva_colors — customising the file and UI colours of eva
 
 
 SYNOPSIS
 ========
 
-The `EZA_COLORS` environment variable can be used to customise the colours that `eza` uses to highlight file names, file metadata, and parts of the UI.
+The `EVA_COLORS` environment variable can be used to customise the colours that `eva` uses to highlight file names, file metadata, and parts of the UI.
 
 You can use the `dircolors` program to generate a script that sets the variable from an input file, or if you don’t mind editing long strings of text, you can just type it out directly. These variables have the following structure:
 
@@ -24,25 +24,25 @@ You can use the `dircolors` program to generate a script that sets the variable 
 
 The key half of the pair can either be a two-letter code or a file glob, and anything that’s not a valid code will be treated as a glob, including keys that happen to be two letters long.
 
-For backwards compatibility `EXA_COLORS` environment variables is checked if `EZA_COLORS` is unset.
+For backwards compatibility, `EZA_COLORS` is checked if `EVA_COLORS` is unset, and `EXA_COLORS` is checked if both are unset.
 
 
 EXAMPLES
 ========
 
-`EZA_COLORS="uu=0:gu=0"`
+`EVA_COLORS="uu=0:gu=0"`
 : Disable the “current user” highlighting
 
-`EZA_COLORS="da=32"`
+`EVA_COLORS="da=32"`
 : Turn the date column green
 
-`EZA_COLORS="Vagrantfile=1;4;33"`
+`EVA_COLORS="Vagrantfile=1;4;33"`
 : Highlight Vagrantfiles
 
-`EZA_COLORS="*.zip=38;5;125"`
+`EVA_COLORS="*.zip=38;5;125"`
 : Override the existing zip colour
 
-`EZA_COLORS="*.md=38;5;121:*.log=38;5;248"`
+`EVA_COLORS="*.md=38;5;121:*.log=38;5;248"`
 : Markdown files a shade of green, log files a shade of grey
 
 
@@ -79,7 +79,7 @@ LIST OF CODES
 : symlinks with no target
 
 
-`EZA_COLORS` can use many more:
+`EVA_COLORS` can use many more:
 
 `oc`
 : the permissions displayed as octal
@@ -306,15 +306,15 @@ LIST OF CODES
 `ff`
 : BSD file flags
 
-Values in `EXA_COLORS` override those given in `LS_COLORS`, so you don’t need to re-write an existing `LS_COLORS` variable with proprietary extensions.
+Values in `EVA_COLORS` override those given in `LS_COLORS`, so you don’t need to re-write an existing `LS_COLORS` variable with proprietary extensions.
 
 
 LIST OF STYLES
 ==============
 
-Unlike some versions of `ls`, the given ANSI values must be valid colour codes: eza won’t just print out whichever characters are given.
+Unlike some versions of `ls`, the given ANSI values must be valid colour codes: eva won’t just print out whichever characters are given.
 
-The codes accepted by eza are:
+The codes accepted by eva are:
 
 `1`
 : for bold
@@ -378,26 +378,25 @@ The codes accepted by eza are:
 
 Many terminals will treat bolded text as a different colour, or at least provide the option to.
 
-eza provides its own built-in set of file extension mappings that cover a large range of common file extensions, including documents, archives, media, and temporary files.
-Any mappings in the environment variables will override this default set: running eza with `LS_COLORS="*.zip=32"` will turn zip files green but leave the colours of other compressed files alone.
+eva provides its own built-in set of file extension mappings that cover a large range of common file extensions, including documents, archives, media, and temporary files.
+Any mappings in the environment variables will override this default set: running eva with `LS_COLORS="*.zip=32"` will turn zip files green but leave the colours of other compressed files alone.
 
-You can also disable this built-in set entirely by including a `reset` entry at the beginning of `EZA_COLORS`.
-So setting `EZA_COLORS="reset:*.txt=31"` will highlight only text files; setting `EZA_COLORS="reset"` will highlight nothing.
+You can also disable this built-in set entirely by including a `reset` entry at the beginning of `EVA_COLORS`.
+So setting `EVA_COLORS="reset:*.txt=31"` will highlight only text files; setting `EVA_COLORS="reset"` will highlight nothing.
 
 
 AUTHOR
 ======
 
-eza is maintained by Christina Sørensen and many other contributors.
+eva is maintained as a personal fork of eza.
 
-**Source code:** `https://github.com/eza-community/eza` \
-**Contributors:** `https://github.com/eza-community/eza/graphs/contributors`
+**Source code:** `https://github.com/vivek-x-jha/eva`
 
-Our infinite thanks to Benjamin ‘ogham’ Sago and all the other contributors of exa, from which eza was forked.
+Our infinite thanks to the eza and exa contributors whose work this fork builds on.
 
 
 SEE ALSO
 ========
 
-- [**eza**(1)](eza.1.md)
-- [**eza_colors-explanation**(5)](eza_colors-explanation.5.md)
+- [**eva**(1)](eva.1.md)
+- [**eva_colors-explanation**(5)](eva_colors-explanation.5.md)

@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Ask a question about eza
+about: Ask a question about eva
 title: ''
 labels: question
 assignees: ''

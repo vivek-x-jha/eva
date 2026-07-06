@@ -10,7 +10,7 @@
 ///
 /// This script generates the string from the environment variables that Cargo
 /// adds (<http://doc.crates.io/environment-variables.html>) and runs `git` to
-/// get the SHA1 hash. It then writes the string into a file, which exa then
+/// get the SHA1 hash. It then writes the string into a file, which eva then
 /// includes at build-time.
 ///
 /// - <https://stackoverflow.com/q/43753491/3484614>
@@ -26,8 +26,8 @@ use chrono::prelude::*;
 fn main() -> io::Result<()> {
     #![allow(clippy::write_with_newline)]
 
-    let tagline = "eza - A modern, maintained replacement for ls";
-    let url = "https://github.com/eza-community/eza";
+    let tagline = "- A personal fork of eza, a modern replacement for ls";
+    let url = "https://github.com/vivek-x-jha/eva";
 
     let ver = if is_debug_build() {
         format!(

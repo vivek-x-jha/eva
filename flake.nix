@@ -4,7 +4,7 @@
 # SPDX-FileCopyrightText: 2014-2024 Christina Sørensen, eza contributors
 # SPDX-License-Identifier: MIT
 {
-  description = "eza: a modern, maintained replacement for ls";
+  description = "eva: a personal fork of eza, a modern replacement for ls";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -100,7 +100,7 @@
         formatter = treefmtEval.config.build.wrapper;
 
         packages = {
-          default = import ./nix/eza.nix { inherit pkgs naersk' buildInputs; };
+          default = import ./nix/eva.nix { inherit pkgs naersk' buildInputs; };
 
           check = naersk'.buildPackage {
             inherit buildInputs;

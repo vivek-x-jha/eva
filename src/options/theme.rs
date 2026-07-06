@@ -10,9 +10,7 @@ use crate::options::parser::ShowWhen;
 use crate::options::{vars, Vars};
 use crate::output::color_scale::ColorScaleOptions;
 use crate::theme::{Definitions, Options, UseColours};
-use std::path::PathBuf;
-
-use super::config::ThemeConfig;
+use super::config::{ThemeConfig, config_dirs_from_vars};
 
 impl Options {
     pub fn deduce<V: Vars>(matches: &ArgMatches, vars: &V) -> Self {
@@ -37,30 +35,19 @@ impl Options {
 
 impl ThemeConfig {
     fn deduce<V: Vars>(vars: &V) -> Option<Self> {
-        if let Some(path) = vars.get("EZA_CONFIG_DIR") {
-            let path = PathBuf::from(path);
+        for path in config_dirs_from_vars(vars) {
             let theme = path.join("theme.yml");
             if theme.exists() {
                 return Some(ThemeConfig::from_path(theme));
             }
+
             let theme = path.join("theme.yaml");
             if theme.exists() {
                 return Some(ThemeConfig::from_path(theme));
             }
-            None
-        } else {
-            let path = dirs::config_dir().unwrap_or_default();
-            let path = path.join("eza");
-            let theme = path.join("theme.yml");
-            if theme.exists() {
-                return Some(ThemeConfig::default());
-            }
-            let theme = path.join("theme.yaml");
-            if theme.exists() {
-                return Some(ThemeConfig::from_path(theme));
-            }
-            None
         }
+
+        None
     }
 }
 
@@ -85,7 +72,7 @@ impl Definitions {
             .get(vars::LS_COLORS)
             .map(|e| e.to_string_lossy().to_string());
         let exa = vars
-            .get_with_fallback(vars::EZA_COLORS, vars::EXA_COLORS)
+            .get_with_fallbacks(&[vars::EVA_COLORS, vars::EZA_COLORS, vars::EXA_COLORS])
             .map(|e| e.to_string_lossy().to_string());
         Self { ls, exa }
     }
@@ -118,12 +105,27 @@ mod tests {
             ..MockVars::default()
         };
 
-        vars.set(vars::LS_COLORS, &OsString::from("uR=1;34"));
+        vars.set(vars::LS_COLORS, &OsString::from("di=34"));
+        vars.set(vars::EVA_COLORS, &OsString::from("uR=1;34"));
 
         assert_eq!(
             Definitions::deduce(&vars),
             Definitions {
-                ls: Some("uR=1;34".to_string()),
+                ls: Some("di=34".to_string()),
+                exa: Some("uR=1;34".to_string()),
+            }
+        );
+    }
+
+    #[test]
+    fn deduce_definitions_colors_uses_eza_fallback() {
+        let mut vars = MockVars::default();
+        vars.set(vars::EZA_COLORS, &OsString::from("uR=1;34"));
+
+        assert_eq!(
+            Definitions::deduce(&vars),
+            Definitions {
+                ls: None,
                 exa: Some("uR=1;34".to_string()),
             }
         );

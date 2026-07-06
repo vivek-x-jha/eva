@@ -1,35 +1,35 @@
-% eza_colors-explanation(5) $version
+% eva_colors-explanation(5) $version
 
-<!-- This is the eza_colors-explanation(5) man page, written in Markdown. -->
+<!-- This is the eva_colors-explanation(5) man page, written in Markdown. -->
 <!-- To generate the roff version, run `just man`, -->
 <!-- and the man page will appear in the ‘target’ directory. -->
 
 # Name
 
-eza_colors-explanation — more details on customizing eza colors
+eva_colors-explanation — more details on customizing eva colors
 
-# Eza Color Explanation
+# Eva Color Explanation
 
-eza provides its own built\-in set of file extension mappings that cover a large range of common file extensions, including documents, archives, media, and temporary files. 
-Any mappings in the environment variables will override this default set: running eza with `LS_COLORS="*.zip=32"` will turn zip files green but leave the colours of other compressed files alone.
+eva provides its own built\-in set of file extension mappings that cover a large range of common file extensions, including documents, archives, media, and temporary files.
+Any mappings in the environment variables will override this default set: running eva with `LS_COLORS="*.zip=32"` will turn zip files green but leave the colours of other compressed files alone.
 
 You can also disable this built\-in set entirely by including a
-`reset` entry at the beginning of `EZA_COLORS`.
-So setting `EZA_COLORS="reset:*.txt=31"` will highlight only text
-files; setting `EZA_COLORS="reset"` will highlight nothing.
+`reset` entry at the beginning of `EVA_COLORS`.
+So setting `EVA_COLORS="reset:*.txt=31"` will highlight only text
+files; setting `EVA_COLORS="reset"` will highlight nothing.
 
 ## Examples
 
-- Disable the "current user" highlighting: `EZA_COLORS="uu=0:gu=0"`
-- Turn the date column green: `EZA_COLORS="da=32"`
-- Highlight Vagrantfiles: `EZA_COLORS="Vagrantfile=1;4;33"`
-- Override the existing zip colour: `EZA_COLORS="*.zip=38;5;125"`
+- Disable the "current user" highlighting: `EVA_COLORS="uu=0:gu=0"`
+- Turn the date column green: `EVA_COLORS="da=32"`
+- Highlight Vagrantfiles: `EVA_COLORS="Vagrantfile=1;4;33"`
+- Override the existing zip colour: `EVA_COLORS="*.zip=38;5;125"`
 - Markdown files a shade of green, log files a shade of grey:
-`EZA_COLORS="*.md=38;5;121:*.log=38;5;248"`
+`EVA_COLORS="*.md=38;5;121:*.log=38;5;248"`
 
 ## BUILT\-IN EXTENSIONS
 
-- eza now supports bright colours! As supported by most modern 256\-colour terminals, you can now choose from `bright` colour codes when selecting your custom colours in your `#EZA_COLORS` environment variable.
+- eva now supports bright colours! As supported by most modern 256\-colour terminals, you can now choose from `bright` colour codes when selecting your custom colours in your `#EVA_COLORS` environment variable.
 
 - Build (Makefile, Cargo.toml, package.json) are yellow and underlined.
 - Images (png, jpeg, gif) are purple.
@@ -49,8 +49,8 @@ in the same directory as one of its source files: styles.css will count as compi
 
 Now you can specify these options and more in a `theme.yml` file with convenient syntax for defining your styles.
 
-Set `EZA_CONFIG_DIR` to specify which directory you would like eza to look for your `theme.yml` file,
-otherwise eza will look for `$XDG_CONFIG_HOME/eza/theme.yml`.
+Set `EVA_CONFIG_DIR` to specify which directory you would like eva to look for your `theme.yml` file.
+Otherwise eva will look for `$XDG_CONFIG_HOME/eva/theme.yml`, falling back to `$HOME/.config/eva/theme.yml` when `XDG_CONFIG_HOME` is not set. If no eva theme is found, eva also checks legacy `EZA_CONFIG_DIR`, `$XDG_CONFIG_HOME/eza`, and `$HOME/.config/eza` locations.
 
 
 These are the available options:
@@ -147,6 +147,12 @@ file_type:
   build
   source
 
+icons:
+  folder
+  empty_folder
+  file
+  unknown_file
+
 punctuation:
 
 date:
@@ -202,10 +208,21 @@ security_context:
       is_hidden: true
 ```
 
-Icons can now be customized as well in the `filenames` and `extensions` fields
+Icons can now be customized sparsely in the `icons`, `filenames`, and `extensions` fields.
+
+`icons` controls built-in fallback icon buckets without requiring a copy of every filename or extension mapping:
 
 ```yaml
+icons:
+  folder: { glyph: "" }
+  empty_folder: { glyph: "" }
+  file: { glyph: "" }
+  unknown_file: { glyph: "󰡯" }
+```
 
+Named directory icons, filename overrides, and extension overrides take precedence over these defaults. If `empty_folder` is unset, empty directories use `folder`. Use `filenames` and `extensions` for exact per-name or per-extension changes:
+
+```yaml
 filenames:
   # Just change the icon glyph
   Cargo.toml: {icon: {glyph: 🦀}}
@@ -213,7 +230,6 @@ filenames:
 
 extensions:
   rs: {  filename: {foreground: Red}, icon: {glyph: 🦀}}
-
 ```
 
 **NOTES:** 
@@ -228,5 +244,5 @@ You must name the file `theme.yml`, no matter the directory you specify.
 
 ## See also
 
-- [**eza**(1)](eza.1.md)
-- [**eza_colors**(5)](eza_colors.5.md)
+- [**eva**(1)](eva.1.md)
+- [**eva_colors**(5)](eva_colors.5.md)

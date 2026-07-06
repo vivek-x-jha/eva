@@ -7,7 +7,7 @@
 use clap::ArgMatches;
 
 use crate::options::Vars;
-use crate::options::vars::EZA_STDIN_SEPARATOR;
+use crate::options::vars::{EVA_STDIN_SEPARATOR, EZA_STDIN_SEPARATOR};
 use std::ffi::OsString;
 use std::io;
 use std::io::IsTerminal;
@@ -22,7 +22,7 @@ impl FilesInput {
     pub fn deduce<V: Vars>(matches: &ArgMatches, vars: &V) -> Self {
         if matches.get_flag("stdin") || !io::stdin().is_terminal() {
             let separator = vars
-                .get(EZA_STDIN_SEPARATOR)
+                .get_with_fallbacks(&[EVA_STDIN_SEPARATOR, EZA_STDIN_SEPARATOR])
                 .unwrap_or(OsString::from("\n"));
             FilesInput::Stdin(separator)
         } else {

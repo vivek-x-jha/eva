@@ -13,6 +13,7 @@ use crate::info::filetype::FileType;
 use crate::options::config::ThemeConfig;
 use crate::output::color_scale::ColorScaleOptions;
 use crate::output::file_name::Colours as FileNameColours;
+use crate::output::icons::{IconKind, icon_kind_for_file};
 use crate::output::render;
 
 mod ui_styles;
@@ -82,7 +83,7 @@ impl Options {
             // Failed to enable ansi support, probably because legacy mode console.
             // No need to alert the user unless they explicitly set color=always
             if self.use_colours == UseColours::Always {
-                eprintln!("eza: Ignoring option color=always in legacy console.");
+                eprintln!("eva: Ignoring option color=always in legacy console.");
             }
             let ui = UiStyles::plain();
             let exts = Box::new(NoFileStyle);
@@ -126,8 +127,8 @@ impl Definitions {
     /// colours into the `ExtensionMappings` that gets returned, and using the
     /// two-character UI codes to modify the mutable `Colours`.
     ///
-    /// Also returns if the `EZA_COLORS` variable should reset the existing file
-    /// type mappings or not. The `reset` code needs to be the first one.
+    /// Also returns if the `EVA_COLORS`/legacy colour variable should reset the
+    /// existing file type mappings or not. The `reset` code needs to be first.
     fn parse_color_vars(&self, colours: &mut UiStyles) -> (ExtensionMappings, bool) {
         use log::warn;
 
@@ -478,7 +479,7 @@ impl FileNameColours for Theme {
             .unwrap_or(self.ui.filekinds.unwrap_or_default().normal())
     }
 
- fn style_override(&self, file: &File<'_>) -> Option<FileNameStyle> {
+    fn style_override(&self, file: &File<'_>) -> Option<FileNameStyle> {
         if let Some(ref name_overrides) = self.ui.filenames
             && let Some(file_override) = name_overrides.get(&file.name) {
                 return Some(*file_override);
@@ -491,6 +492,17 @@ impl FileNameColours for Theme {
                 }
 
         None
+    }
+
+    fn icon_override(&self, file: &File<'_>) -> Option<IconStyle> {
+        let icons = self.ui.icons?;
+        match icon_kind_for_file(file) {
+            IconKind::Directory => icons.folder,
+            IconKind::EmptyDirectory => icons.empty_folder.or(icons.folder),
+            IconKind::File => icons.file,
+            IconKind::UnknownFile => icons.unknown_file,
+            IconKind::NamedDirectory | IconKind::Filename | IconKind::Extension => None,
+        }
     }
 }
 
@@ -565,6 +577,87 @@ mod customs_test {
         }
     }
 
+    #[test]
+    fn sparse_icon_defaults_apply_to_fallback_buckets() {
+        let root = std::env::temp_dir().join(format!(
+            "eva-icon-defaults-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(root.join("full")).unwrap();
+        std::fs::write(root.join("full/file"), "content").unwrap();
+        std::fs::create_dir_all(root.join("empty")).unwrap();
+        std::fs::create_dir_all(root.join("src")).unwrap();
+        std::fs::write(root.join("plain.unknownext"), "content").unwrap();
+        std::fs::write(root.join("noext"), "content").unwrap();
+
+        let theme = Theme {
+            ui: UiStyles {
+                icons: Some(IconTheme {
+                    folder: Some(IconStyle {
+                        glyph: Some('F'),
+                        style: None,
+                    }),
+                    empty_folder: Some(IconStyle {
+                        glyph: Some('E'),
+                        style: None,
+                    }),
+                    file: Some(IconStyle {
+                        glyph: Some('f'),
+                        style: None,
+                    }),
+                    unknown_file: Some(IconStyle {
+                        glyph: Some('?'),
+                        style: None,
+                    }),
+                }),
+                ..UiStyles::default()
+            },
+            exts: Box::new(NoFileStyle),
+        };
+
+        let full = crate::fs::File::from_args(root.join("full"), None, None, false, false, None);
+        let empty = crate::fs::File::from_args(root.join("empty"), None, None, false, false, None);
+        let named = crate::fs::File::from_args(root.join("src"), None, None, false, false, None);
+        let file = crate::fs::File::from_args(
+            root.join("plain.unknownext"),
+            None,
+            None,
+            false,
+            false,
+            None,
+        );
+        let unknown =
+            crate::fs::File::from_args(root.join("noext"), None, None, false, false, None);
+
+        assert_eq!(
+            FileNameColours::icon_override(&theme, &full).unwrap().glyph,
+            Some('F')
+        );
+        assert_eq!(
+            FileNameColours::icon_override(&theme, &empty)
+                .unwrap()
+                .glyph,
+            Some('E')
+        );
+        assert_eq!(FileNameColours::icon_override(&theme, &named), None);
+        assert_eq!(
+            FileNameColours::icon_override(&theme, &file).unwrap().glyph,
+            Some('f')
+        );
+        assert_eq!(
+            FileNameColours::icon_override(&theme, &unknown)
+                .unwrap()
+                .glyph,
+            Some('?')
+        );
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
     macro_rules! test {
         ($name:ident:  ls $ls:expr, exa $exa:expr  =>  colours $expected:ident -> $process_expected:expr) => {
             #[allow(non_snake_case)]
@@ -636,7 +729,7 @@ mod customs_test {
     test!(ls_ln:   ls "ln=34", exa ""  =>  colours c -> { c.filekinds().symlink      = Some(Blue.normal());   });
     test!(ls_or:   ls "or=33", exa ""  =>  colours c -> { c.broken_symlink         = Some(Yellow.normal()); });
 
-    // EZA_COLORS can affect all those colours too:
+    // EVA_COLORS can affect all those colours too:
     test!(exa_di:  ls "", exa "di=32"  =>  colours c -> { c.filekinds().directory    = Some(Green.normal());  });
     test!(exa_ex:  ls "", exa "ex=33"  =>  colours c -> { c.filekinds().executable   = Some(Yellow.normal()); });
     test!(exa_fi:  ls "", exa "fi=34"  =>  colours c -> { c.filekinds().normal       = Some(Blue.normal());   });
@@ -647,12 +740,12 @@ mod customs_test {
     test!(exa_ln:  ls "", exa "ln=33"  =>  colours c -> { c.filekinds().symlink      = Some(Yellow.normal()); });
     test!(exa_or:  ls "", exa "or=32"  =>  colours c -> { c.broken_symlink         = Some(Green.normal());  });
 
-    // EZA_COLORS will even override options from LS_COLORS:
+    // EVA_COLORS will even override options from LS_COLORS:
     test!(ls_exa_di: ls "di=31", exa "di=32"  =>  colours c -> { c.filekinds().directory  = Some(Green.normal());  });
     test!(ls_exa_ex: ls "ex=32", exa "ex=33"  =>  colours c -> { c.filekinds().executable = Some(Yellow.normal()); });
     test!(ls_exa_fi: ls "fi=33", exa "fi=34"  =>  colours c -> { c.filekinds().normal     = Some(Blue.normal());   });
 
-    // But more importantly, EZA_COLORS has its own, special list of colours:
+    // But more importantly, EVA_COLORS has its own, special list of colours:
     test!(exa_ur:  ls "", exa "ur=38;5;100"  =>  colours c -> { c.perms().user_read           = Some(Fixed(100).normal()); });
     test!(exa_uw:  ls "", exa "uw=38;5;101"  =>  colours c -> { c.perms().user_write          = Some(Fixed(101).normal()); });
     test!(exa_ux:  ls "", exa "ux=38;5;102"  =>  colours c -> { c.perms().user_execute_file   = Some(Fixed(102).normal()); });
@@ -760,7 +853,7 @@ mod customs_test {
     test!(exa_mp3: ls "", exa "lev.*=38;5;153"     =>  exts [ ("lev.*",      Fixed(153).normal())      ]);
     test!(exa_mak: ls "", exa "Cargo.toml=4;32;1"  =>  exts [ ("Cargo.toml", Green.bold().underline()) ]);
 
-    // Testing whether a glob from EZA_COLORS overrides a glob from LS_COLORS
+    // Testing whether a glob from EVA_COLORS overrides a glob from LS_COLORS
     // can’t be tested here, because they’ll both be added to the same vec
 
     // Values get separated by colons:

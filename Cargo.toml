@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2024 Christina Sørensen
 # SPDX-License-Identifier: EUPL-1.2
 [package]
-name = "eza"
-description = "A modern replacement for ls"
+name = "eva"
+description = "A personal fork of eza, a modern replacement for ls"
 authors = ["Christina Sørensen <christina@cafkafk.com>"]
 categories = ["command-line-utilities"]
 edition = "2024"
@@ -26,61 +26,61 @@ exclude = [
   "/.pre-commit-config-non-nix.yaml",
 ]
 readme = "README.md"
-homepage = "https://github.com/eza-community/eza"
+homepage = "https://github.com/vivek-x-jha/eva"
 license = "EUPL-1.2"
-repository = "https://github.com/eza-community/eza"
-version = "0.23.4"
+repository = "https://github.com/vivek-x-jha/eva"
+version = "0.2.0"
 
 
 [package.metadata.deb]
 license-file = ["LICENSE.txt", "4"]
 depends = "$auto"
 extended-description = """
-eza is a modern, maintained replacement for ls
+eva is a personal fork of eza, a modern, maintained replacement for ls
 """
 section = "utils"
 priority = "optional"
 assets = [
   [
-    "target/release/eza",
-    "/usr/bin/eza",
+    "target/release/eva",
+    "/usr/bin/eva",
     "0755",
   ],
   [
-    "target/release/../man/eza.1",
-    "/usr/share/man/man1/eza.1",
+    "target/release/../man/eva.1",
+    "/usr/share/man/man1/eva.1",
     "0644",
   ],
   [
-    "target/release/../man/eza_colors.5",
-    "/usr/share/man/man5/eza_colors.5",
+    "target/release/../man/eva_colors.5",
+    "/usr/share/man/man5/eva_colors.5",
     "0644",
   ],
   [
-    "target/release/../man/eza_colors-explanation.5",
-    "/usr/share/man/man5/eza_colors-explanation.5",
+    "target/release/../man/eva_colors-explanation.5",
+    "/usr/share/man/man5/eva_colors-explanation.5",
     "0644",
   ],
   [
-    "completions/bash/eza",
-    "/usr/share/bash-completion/completions/eza",
+    "completions/bash/eva",
+    "/usr/share/bash-completion/completions/eva",
     "0644",
   ],
   [
-    "completions/zsh/_eza",
-    "/usr/share/zsh/site-functions/_eza",
+    "completions/zsh/_eva",
+    "/usr/share/zsh/site-functions/_eva",
     "0644",
   ],
   [
-    "completions/fish/eza.fish",
-    "/usr/share/fish/vendor_completions.d/eza.fish",
+    "completions/fish/eva.fish",
+    "/usr/share/fish/vendor_completions.d/eva.fish",
     "0644",
   ],
 ]
 
 
 [[bin]]
-name = "eza"
+name = "eva"
 
 
 [dependencies]
@@ -108,7 +108,6 @@ timeago = { version = "0.6.0", default-features = false }
 unicode-width = "0.2"
 ansi-width = "0.1.0"
 serde = { version = "1.0.219", features = ["derive"] }
-dirs = "6.0.0"
 serde_norway = "0.9"
 backtrace = "0.3"
 clap = { version = "4.5.38", features = ["cargo", "derive"] }

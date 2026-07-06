@@ -25,6 +25,14 @@ pub struct FileNameStyle {
     pub filename: Option<Style>,
 }
 
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub struct IconTheme {
+    pub folder: Option<IconStyle>,
+    pub empty_folder: Option<IconStyle>,
+    pub file: Option<IconStyle>,
+    pub unknown_file: Option<IconStyle>,
+}
+
 #[rustfmt::skip]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct UiStyles {
@@ -53,6 +61,7 @@ pub struct UiStyles {
     pub broken_symlink:       Option<Style>,  // or
     pub broken_path_overlay:  Option<Style>,  // bO
 
+    pub icons: Option<IconTheme>,
     pub filenames: Option<HashMap<String, FileNameStyle>>,
     pub extensions: Option<HashMap<String, FileNameStyle>>,
 }
@@ -501,6 +510,7 @@ impl UiStyles {
             broken_symlink: Some(Style::default()),
             broken_path_overlay: Some(Style::default()),
 
+            icons: None,
             filenames: None,
             extensions: None,
         }
@@ -532,7 +542,7 @@ impl UiStyles {
     }
 
     /// Sets a value on this set of colours using one of the keys understood
-    /// by the `EZA_COLORS` environment variable. Invalid keys set nothing,
+    /// by the `EVA_COLORS` environment variable. Invalid keys set nothing,
     /// but return false. This doesn’t take the `LS_COLORS` keys into account,
     /// so `set_ls` should have been run first.
     #[rustfmt::skip]

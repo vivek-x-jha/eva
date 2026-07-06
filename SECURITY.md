@@ -8,7 +8,7 @@ SPDX-License-Identifier: EUPL-1.2
 
 ## Supported Versions
 
-This section shows which versions of eza are
+This section shows which versions of eva are
 currently being supported with security updates.
 
 | Version | Supported          |

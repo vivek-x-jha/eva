@@ -1,7 +1,7 @@
 using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
-Register-ArgumentCompleter -Native -CommandName 'eza' -ScriptBlock {
+Register-ArgumentCompleter -Native -CommandName 'eva' -ScriptBlock {
     param($wordToComplete, $commandAst, $cursorPosition)
 
     $ArrayWhen           = @('always', 'auto', 'never')
@@ -14,7 +14,7 @@ Register-ArgumentCompleter -Native -CommandName 'eza' -ScriptBlock {
 
     $commandElements = $commandAst.CommandElements
     $command = @(
-        'eza'
+        'eva'
         for ($i = 1; $i -lt $commandElements.Count; $i++) {
             $element = $commandElements[$i]
             if ($element -isnot [StringConstantExpressionAst] -or
@@ -137,8 +137,8 @@ Register-ArgumentCompleter -Native -CommandName 'eza' -ScriptBlock {
         default {
         #   [CompletionResult]::new('-?'                         ,'help'                , [CompletionResultType]::ParameterName, 'show list of command-line options')
             [CompletionResult]::new('--help'                     ,'help'                , [CompletionResultType]::ParameterName, 'show list of command-line options')
-        #   [CompletionResult]::new('-v'                         ,'version'             , [CompletionResultType]::ParameterName, 'show version of eza')
-            [CompletionResult]::new('--version'                  ,'version'             , [CompletionResultType]::ParameterName, 'show version of eza')
+        #   [CompletionResult]::new('-v'                         ,'version'             , [CompletionResultType]::ParameterName, 'show version of eva')
+            [CompletionResult]::new('--version'                  ,'version'             , [CompletionResultType]::ParameterName, 'show version of eva')
         #   [CompletionResult]::new('-1'                         ,'oneline'             , [CompletionResultType]::ParameterName, 'display one entry per line')
             [CompletionResult]::new('--oneline'                  ,'oneline'             , [CompletionResultType]::ParameterName, 'display one entry per line')
         #   [CompletionResult]::new('-l'                         ,'long'                , [CompletionResultType]::ParameterName, 'display extended file metadata as a table')

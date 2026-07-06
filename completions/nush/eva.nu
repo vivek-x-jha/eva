@@ -1,5 +1,5 @@
-export extern "eza" [
-    --version(-v)              # Show version of eza
+export extern "eva" [
+    --version(-v)              # Show version of eva
     --help                     # Show list of command-line options
     --oneline(-1)              # Display one entry per line
     --long(-l)                 # Display extended file metadata as a table
@@ -62,5 +62,5 @@ export extern "eza" [
     --extended(-@)             # List each file's extended attributes and sizes
     --context(-Z)              # List each file's security context
     --smart-group              # Only show group if it has a different name from owner
-    --stdin                    # When piping to eza. Read file paths from stdin
+    --stdin                    # When piping to eva. Read file paths from stdin
 ]

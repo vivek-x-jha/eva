@@ -17,7 +17,7 @@
       shellcheck = {
         includes = [
           "*.sh"
-          "./completions/bash/eza"
+          "./completions/bash/eva"
         ];
         excludes = [ ".envrc" ];
       };

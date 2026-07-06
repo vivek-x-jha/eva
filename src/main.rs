@@ -40,7 +40,11 @@ fn main() {
         libc::signal(libc::SIGPIPE, libc::SIG_DFL);
     }
 
-    logger::configure(env::var_os(vars::EZA_DEBUG).or_else(|| env::var_os(vars::EXA_DEBUG)));
+    logger::configure(
+        env::var_os(vars::EVA_DEBUG)
+            .or_else(|| env::var_os(vars::EZA_DEBUG))
+            .or_else(|| env::var_os(vars::EXA_DEBUG)),
+    );
 
     let cli = get_command().get_matches();
 
@@ -78,7 +82,7 @@ fn main() {
 
             let console_width = options.view.width.actual_terminal_width();
             let theme = options.theme.to_theme(stdout_istty);
-            let exa = Exa {
+            let eva = Eva {
                 options,
                 writer,
                 input_paths,
@@ -88,10 +92,10 @@ fn main() {
                 git_repos,
             };
 
-            info!("matching on exa.run");
-            match exa.run() {
+            info!("matching on eva.run");
+            match eva.run() {
                 Ok(exit_status) => {
-                    trace!("exa.run: exit Ok({exit_status})");
+                    trace!("eva.run: exit Ok({exit_status})");
                     exit(exit_status);
                 }
 
@@ -102,20 +106,20 @@ fn main() {
 
                 Err(e) => {
                     eprintln!("{e}");
-                    trace!("exa.run: exit RUNTIME_ERROR");
+                    trace!("eva.run: exit RUNTIME_ERROR");
                     exit(exits::RUNTIME_ERROR);
                 }
             }
         }
         Err(error) => {
-            eprintln!("eza: {error}");
+            eprintln!("eva: {error}");
             exit(exits::OPTIONS_ERROR);
         }
     }
 }
 
 /// The main program wrapper.
-pub struct Exa<'args> {
+pub struct Eva<'args> {
     /// List of command-line options, having been successfully parsed.
     pub options: Options,
 
@@ -219,7 +223,7 @@ fn git_repos(options: &Options, args: &[&OsStr]) -> bool {
     }
 }
 
-impl Exa<'_> {
+impl Eva<'_> {
     /// # Errors
     ///
     /// Will return `Err` if printing to stderr fails.

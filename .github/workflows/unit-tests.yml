@@ -101,7 +101,7 @@ jobs:
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain ${{ matrix.rust == 'msrv' && env.msrv || matrix.rust }} --profile minimal -y
             . ~/.cargo/env
             cargo install cargo-hack
-            git config --global --add safe.directory /home/runner/work/eza/eza
+            git config --global --add safe.directory /home/runner/work/eva/eva
           run: |
             set -e
             . ~/.cargo/env
@@ -135,7 +135,7 @@ jobs:
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain ${{ matrix.rust == 'msrv' && env.msrv || matrix.rust }} --profile minimal -y
             . ~/.cargo/env
             cargo install cargo-hack
-            git config --global --add safe.directory /home/runner/work/eza/eza
+            git config --global --add safe.directory /home/runner/work/eva/eva
           run: |
             set -e
             . ~/.cargo/env
@@ -160,7 +160,7 @@ jobs:
           prepare: |
             pkg_add rust rust-rustfmt rust-clippy git
             cargo install cargo-hack
-            git config --global --add safe.directory /home/runner/work/eza/eza
+            git config --global --add safe.directory /home/runner/work/eva/eva
           run: |
             set -e
             export CARGO_TERM_COLOR="always"

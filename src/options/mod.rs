@@ -159,7 +159,7 @@ impl Options {
             )));
         }
         let strict = vars
-            .get_with_fallback(vars::EXA_STRICT, vars::EZA_STRICT)
+            .get_with_fallbacks(&[vars::EVA_STRICT, vars::EZA_STRICT, vars::EXA_STRICT])
             .is_some();
 
         let view = View::deduce(matches, vars, strict)?;

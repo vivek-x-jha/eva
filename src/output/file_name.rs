@@ -16,7 +16,7 @@ use crate::output::cell::TextCellContents;
 use crate::output::escape;
 use crate::output::icons::{icon_for_file, iconify_style};
 use crate::output::render::FiletypeColours;
-use crate::theme::FileNameStyle;
+use crate::theme::{FileNameStyle, IconStyle};
 
 /// Basically a file name factory.
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -210,6 +210,7 @@ impl<C: Colours> FileName<'_, '_, C> {
             Some(FileNameStyle { icon, filename }) => (icon, filename),
             None => (None, None),
         };
+        let icon_override = icon_override.or_else(|| self.colours.icon_override(self.file));
 
         let spaces_count_opt = match self.options.show_icons {
             ShowIcons::Always(spaces_count) => Some(spaces_count),
@@ -541,4 +542,8 @@ pub trait Colours: FiletypeColours {
     fn colour_file(&self, file: &File<'_>) -> Style;
 
     fn style_override(&self, file: &File<'_>) -> Option<FileNameStyle>;
+
+    fn icon_override(&self, _file: &File<'_>) -> Option<IconStyle> {
+        None
+    }
 }

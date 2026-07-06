@@ -6,6 +6,22 @@ SPDX-License-Identifier: EUPL-1.2
 -->
 # Changelog
 
+## [0.2.0] - 2026-07-06
+
+### Features
+
+- Make `eva` the primary user-facing name for release assets, man pages, completions, config paths, and environment variables.
+- Prefer `EVA_CONFIG_DIR`, `$XDG_CONFIG_HOME/eva`, and `$HOME/.config/eva`, with legacy `EZA_CONFIG_DIR` and `eza` config paths as fallbacks.
+- Add `EVA_*` environment variables with legacy `EZA_*` and `EXA_*` fallbacks where applicable.
+
+## [0.1.0] - 2026-07-05
+
+### Features
+
+- Rename the fork package and binary to `eva`.
+- Use a centralized config directory resolver across platforms.
+- Add sparse icon defaults for fallback folder, empty folder, file, and unknown-file icons in `theme.yml`.
+
 ## [0.23.4] - 2025-10-03
 
 ### Bug Fixes

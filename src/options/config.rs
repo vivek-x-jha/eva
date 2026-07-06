@@ -4,16 +4,94 @@
 // SPDX-FileCopyrightText: 2023-2024 Christina Sørensen, eza contributors
 // SPDX-FileCopyrightText: 2014 Benjamin Sago
 // SPDX-License-Identifier: MIT
+use crate::options::{Vars, vars};
 use crate::theme::ThemeFileType as FileType;
 use crate::theme::{
-    FileKinds, FileNameStyle, Git, GitRepo, IconStyle, Links, Permissions, SELinuxContext,
-    SecurityContext, Size, UiStyles, Users,
+    FileKinds, FileNameStyle, Git, GitRepo, IconStyle, IconTheme, Links, Permissions,
+    SELinuxContext, SecurityContext, Size, UiStyles, Users,
 };
 use nu_ansi_term::{Color, Style};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_norway;
 use std::collections::HashMap;
+use std::ffi::OsString;
 use std::path::PathBuf;
+
+struct EnvironmentVars;
+
+impl Vars for EnvironmentVars {
+    fn get(&self, name: &'static str) -> Option<OsString> {
+        std::env::var_os(name)
+    }
+}
+
+fn non_empty_path(value: Option<OsString>) -> Option<PathBuf> {
+    value.filter(|path| !path.is_empty()).map(PathBuf::from)
+}
+
+fn default_config_dir(
+    xdg_config_home: Option<OsString>,
+    home: Option<OsString>,
+    app_name: &str,
+) -> PathBuf {
+    if let Some(path) = non_empty_path(xdg_config_home) {
+        return path.join(app_name);
+    }
+
+    non_empty_path(home)
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(".config")
+        .join(app_name)
+}
+
+fn config_dir_from_vars_and_home<V: Vars>(vars: &V, home: Option<OsString>) -> PathBuf {
+    if let Some(path) = non_empty_path(vars.get(vars::EVA_CONFIG_DIR)) {
+        return path;
+    }
+
+    default_config_dir(vars.get(vars::XDG_CONFIG_HOME), home, "eva")
+}
+
+fn push_unique(paths: &mut Vec<PathBuf>, path: PathBuf) {
+    if !paths.iter().any(|existing| existing == &path) {
+        paths.push(path);
+    }
+}
+
+fn config_dirs_from_vars_and_home<V: Vars>(vars: &V, home: Option<OsString>) -> Vec<PathBuf> {
+    if let Some(path) = non_empty_path(vars.get(vars::EVA_CONFIG_DIR)) {
+        return vec![path];
+    }
+
+    let xdg_config_home = vars.get(vars::XDG_CONFIG_HOME);
+    let primary_default = default_config_dir(xdg_config_home.clone(), home.clone(), "eva");
+    let legacy_default = default_config_dir(xdg_config_home, home, "eza");
+
+    let mut paths = Vec::new();
+    push_unique(&mut paths, primary_default);
+
+    if let Some(path) = non_empty_path(vars.get(vars::EZA_CONFIG_DIR)) {
+        push_unique(&mut paths, path);
+    }
+
+    push_unique(&mut paths, legacy_default);
+    paths
+}
+
+#[must_use]
+pub fn config_dir_from_vars<V: Vars>(vars: &V) -> PathBuf {
+    config_dir_from_vars_and_home(vars, std::env::var_os("HOME"))
+}
+
+#[must_use]
+pub fn config_dirs_from_vars<V: Vars>(vars: &V) -> Vec<PathBuf> {
+    config_dirs_from_vars_and_home(vars, std::env::var_os("HOME"))
+}
+
+#[must_use]
+pub fn config_dir() -> PathBuf {
+    config_dir_from_vars(&EnvironmentVars)
+}
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct ThemeConfig {
@@ -24,10 +102,7 @@ pub struct ThemeConfig {
 impl Default for ThemeConfig {
     fn default() -> Self {
         ThemeConfig {
-            location: dirs::config_dir()
-                .unwrap_or_default()
-                .join("eza")
-                .join("theme.yml"),
+            location: config_dir().join("theme.yml"),
         }
     }
 }
@@ -240,6 +315,25 @@ impl FromOverride<IconStyleOverride> for IconStyle {
 pub struct FileNameStyleOverride {
     pub icon: Option<IconStyleOverride>,
     pub filename: Option<StyleOverride>,
+}
+
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub struct IconThemeOverride {
+    pub folder: Option<IconStyleOverride>,
+    pub empty_folder: Option<IconStyleOverride>,
+    pub file: Option<IconStyleOverride>,
+    pub unknown_file: Option<IconStyleOverride>,
+}
+
+impl FromOverride<IconThemeOverride> for IconTheme {
+    fn from(value: IconThemeOverride, default: Self) -> Self {
+        IconTheme {
+            folder: FromOverride::from(value.folder, default.folder),
+            empty_folder: FromOverride::from(value.empty_folder, default.empty_folder),
+            file: FromOverride::from(value.file, default.file),
+            unknown_file: FromOverride::from(value.unknown_file, default.unknown_file),
+        }
+    }
 }
 
 impl FromOverride<FileNameStyleOverride> for FileNameStyle {
@@ -576,6 +670,7 @@ pub struct UiStylesOverride {
     pub broken_symlink:       Option<StyleOverride>,  // or
     pub broken_path_overlay:  Option<StyleOverride>,  // bO
 
+    pub icons: Option<IconThemeOverride>,
     pub filenames: Option<HashMap<String, FileNameStyleOverride>>,
     pub extensions: Option<HashMap<String, FileNameStyleOverride>>,
 }
@@ -611,6 +706,7 @@ impl FromOverride<UiStylesOverride> for UiStyles {
                 default.broken_path_overlay,
             ),
 
+            icons: FromOverride::from(value.icons, default.icons),
             filenames: FromOverride::from(value.filenames, default.filenames),
             extensions: FromOverride::from(value.extensions, default.extensions),
         }
@@ -634,6 +730,91 @@ impl ThemeConfig {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::options::vars::test::MockVars;
+    use std::ffi::OsString;
+    use std::path::PathBuf;
+
+    #[test]
+    fn config_dir_prefers_eva_config_dir() {
+        let mut vars = MockVars::default();
+        vars.set(vars::EVA_CONFIG_DIR, &OsString::from("/tmp/eva-config"));
+        vars.set(vars::EZA_CONFIG_DIR, &OsString::from("/tmp/eza-config"));
+        vars.set(vars::XDG_CONFIG_HOME, &OsString::from("/tmp/xdg"));
+
+        assert_eq!(
+            config_dir_from_vars_and_home(&vars, Some(OsString::from("/home/me"))),
+            PathBuf::from("/tmp/eva-config")
+        );
+    }
+
+    #[test]
+    fn config_dir_defaults_to_xdg_config_home_eva() {
+        let mut vars = MockVars::default();
+        vars.set(vars::XDG_CONFIG_HOME, &OsString::from("/tmp/xdg"));
+
+        assert_eq!(
+            config_dir_from_vars_and_home(&vars, Some(OsString::from("/home/me"))),
+            PathBuf::from("/tmp/xdg").join("eva")
+        );
+    }
+
+    #[test]
+    fn config_dir_defaults_to_home_dot_config_eva_without_xdg() {
+        let vars = MockVars::default();
+
+        assert_eq!(
+            config_dir_from_vars_and_home(&vars, Some(OsString::from("/home/me"))),
+            PathBuf::from("/home/me").join(".config").join("eva")
+        );
+    }
+
+    #[test]
+    fn config_dirs_include_eza_legacy_fallbacks_after_eva_defaults() {
+        let mut vars = MockVars::default();
+        vars.set(vars::XDG_CONFIG_HOME, &OsString::from("/tmp/xdg"));
+        vars.set(vars::EZA_CONFIG_DIR, &OsString::from("/tmp/eza-config"));
+
+        assert_eq!(
+            config_dirs_from_vars_and_home(&vars, Some(OsString::from("/home/me"))),
+            vec![
+                PathBuf::from("/tmp/xdg").join("eva"),
+                PathBuf::from("/tmp/eza-config"),
+                PathBuf::from("/tmp/xdg").join("eza"),
+            ]
+        );
+    }
+
+    #[test]
+    fn empty_config_env_values_are_ignored() {
+        let mut vars = MockVars::default();
+        vars.set(vars::EVA_CONFIG_DIR, &OsString::new());
+        vars.set(vars::EZA_CONFIG_DIR, &OsString::new());
+        vars.set(vars::XDG_CONFIG_HOME, &OsString::new());
+
+        assert_eq!(
+            config_dir_from_vars_and_home(&vars, Some(OsString::from("/home/me"))),
+            PathBuf::from("/home/me").join(".config").join("eva")
+        );
+    }
+
+    #[test]
+    fn parses_sparse_icon_defaults() {
+        let input = br#"
+icons:
+  folder: { glyph: "F" }
+  empty_folder: { glyph: "E" }
+  file: { glyph: "f" }
+  unknown_file: { glyph: "?" }
+"#;
+        let override_config: UiStylesOverride = serde_norway::from_reader(&input[..]).unwrap();
+        let ui: UiStyles = FromOverride::from(override_config, UiStyles::default());
+        let icons = ui.icons.unwrap();
+
+        assert_eq!(icons.folder.unwrap().glyph, Some('F'));
+        assert_eq!(icons.empty_folder.unwrap().glyph, Some('E'));
+        assert_eq!(icons.file.unwrap().glyph, Some('f'));
+        assert_eq!(icons.unknown_file.unwrap().glyph, Some('?'));
+    }
 
     #[test]
     fn parse_none_color_from_string() {

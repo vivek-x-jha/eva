@@ -1,6 +1,6 @@
 A modern replacement for ls
 
-Usage: eza [OPTIONS] [FILE]...
+Usage: eva [OPTIONS] [FILE]...
 
 META OPTIONS:
       --stdin    read file names from stdin

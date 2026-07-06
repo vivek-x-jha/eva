@@ -1,6 +1,6 @@
-% eza(1) $version
+% eva(1) $version
 
-<!-- This is the eza(1) man page, written in Markdown. -->
+<!-- This is the eva(1) man page, written in Markdown. -->
 <!-- To generate the roff version, run `just man`, -->
 <!-- and the man page will appear in the ‘target’ directory. -->
 
@@ -8,15 +8,15 @@
 NAME
 ====
 
-eza — a modern replacement for ls
+eva — a modern replacement for ls
 
 
 SYNOPSIS
 ========
 
-`eza [options] [files...]`
+`eva [options] [files...]`
 
-**eza** is a modern replacement for `ls`.
+**eva** is a modern replacement for `ls`.
 It uses colours for information by default, helping you distinguish between many types of files, such as whether you are the owner, or in the owning group.
 
 It also has extra features not present in the original `ls`, such as viewing the Git status for a directory, or recursing into directories with a tree view.
@@ -25,16 +25,16 @@ It also has extra features not present in the original `ls`, such as viewing the
 EXAMPLES
 ========
 
-`eza`
+`eva`
 : Lists the contents of the current directory in a grid.
 
-`eza --oneline --reverse --sort=size`
+`eva --oneline --reverse --sort=size`
 : Displays a list of files with the largest at the top.
 
-`eza --long --header --inode --git`
+`eva --long --header --inode --git`
 : Displays a table of files with a header, showing each file’s metadata, inode, and Git status.
 
-`eza --long --tree --level=3`
+`eva --long --tree --level=3`
 : Displays a tree of files, three levels deep, as well as each file’s metadata.
 
 
@@ -45,7 +45,7 @@ META OPTIONS
 : Show list of command-line options.
 
 `-v`, `--version`
-: Show version of eza.
+: Show version of eva.
 
 DISPLAY OPTIONS
 ===============
@@ -69,7 +69,7 @@ When used without a value, defaults to '`on`'.
 Valid settings are ‘`always`’, ‘`automatic`’ (or ‘`auto`’ for short), and ‘`never`’.
 When used without a value, defaults to ‘`automatic`’.
 
-`automatic` or `auto` will display file kind indicators only when the standard output is connected to a real terminal. If `eza` is ran while in a `tty`, or the output of `eza` is either redirected to a file or piped into another program, file kind indicators will not be used. Setting this option to ‘`always`’ causes `eza` to always display file kind indicators, while ‘`never`’ disables the use of file kind indicators.
+`automatic` or `auto` will display file kind indicators only when the standard output is connected to a real terminal. If `eva` is ran while in a `tty`, or the output of `eva` is either redirected to a file or piped into another program, file kind indicators will not be used. Setting this option to ‘`always`’ causes `eva` to always display file kind indicators, while ‘`never`’ disables the use of file kind indicators.
 
 `-G`, `--grid`
 : Display entries as a grid (default).
@@ -98,7 +98,7 @@ When used without a value, defaults to ‘`automatic`’.
 Valid settings are ‘`always`’, ‘`automatic`’ (or ‘`auto`’ for short), and ‘`never`’.
 When used without a value, defaults to ‘`automatic`’.
 
-The default behavior (‘`automatic`’ or ‘`auto`’) is to colorize the output only when the standard output is connected to a real terminal. If the output of `eza` is redirected to a file or piped into another program, terminal colors will not be used. Setting this option to ‘`always`’ causes `eza` to always output terminal color, while ‘`never`’ disables the use of terminal color.
+The default behavior (‘`automatic`’ or ‘`auto`’) is to colorize the output only when the standard output is connected to a real terminal. If the output of `eva` is redirected to a file or piped into another program, terminal colors will not be used. Setting this option to ‘`always`’ causes `eva` to always output terminal color, while ‘`never`’ disables the use of terminal color.
 
 Manually setting this option overrides `NO_COLOR` environment.
 
@@ -118,7 +118,7 @@ When used without a value, defaults to `gradient`.
 Valid settings are ‘`always`’, ‘`automatic`’ (‘`auto`’ for short), and ‘`never`’.
 When used without a value, defaults to ‘`automatic`’.
 
-`automatic` or `auto` will display icons only when the standard output is connected to a real terminal. If `eza` is ran while in a `tty`, or the output of `eza` is either redirected to a file or piped into another program, icons will not be used. Setting this option to ‘`always`’ causes `eza` to always display icons, while ‘`never`’ disables the use of icons.
+`automatic` or `auto` will display icons only when the standard output is connected to a real terminal. If `eva` is ran while in a `tty`, or the output of `eva` is either redirected to a file or piped into another program, icons will not be used. Setting this option to ‘`always`’ causes `eva` to always display icons, while ‘`never`’ disables the use of icons.
 
 `--no-quotes`
 : Don't quote file names with spaces.
@@ -129,7 +129,7 @@ When used without a value, defaults to ‘`automatic`’.
 Valid settings are ‘`always`’, ‘`automatic`’ (‘`auto`’ for short), and ‘`never`’.
 When used without a value, defaults to ‘`automatic`’.
 
-`automatic` or `auto` will display hyperlinks only when the standard output is connected to a real terminal. If `eza` is ran while in a `tty`, or the output of `eza` is either redirected to a file or piped into another program, hyperlinks will not be used. Setting this option to ‘`always`’ causes `eza` to always display hyperlinks, while ‘`never`’ disables the use of hyperlinks.
+`automatic` or `auto` will display hyperlinks only when the standard output is connected to a real terminal. If `eva` is ran while in a `tty`, or the output of `eva` is either redirected to a file or piped into another program, hyperlinks will not be used. Setting this option to ‘`always`’ causes `eva` to always display hyperlinks, while ‘`never`’ disables the use of hyperlinks.
 
 `-w`, `--width=COLS`
 : Set screen width in columns.
@@ -145,7 +145,7 @@ Use this twice to also show the ‘`.`’ and ‘`..`’ directories.
 : Equivalent to --all; included for compatibility with `ls -A`.
 
 `-d`, `--treat-dirs-as-files`
-: This flag, inherited from `ls`, changes how `eza` handles directory arguments.
+: This flag, inherited from `ls`, changes how `eva` handles directory arguments.
 
 : Instead of recursing into directories and listing their contents (the default behavior), it treats directories as regular files and lists information about the directory entry itself.
 
@@ -171,7 +171,7 @@ Sort fields starting with a capital letter will sort uppercase before lowercase:
 `-I`, `--ignore-glob=GLOBS`
 : Glob patterns, pipe-separated, of files to ignore.
 
-`--git-ignore` [if eza was built with git support]
+`--git-ignore` [if eva was built with git support]
 : Do not list files that are ignored by Git.
 
 `--group-directories-first`
@@ -231,7 +231,7 @@ These options are available when running with `--long` (`-l`):
 : List numeric user and group IDs.
 
 `-O`, `--flags`
-: List file flags on Mac and BSD systems and file attributes on Windows systems.  By default, Windows attributes are displayed in a long form.  To display in attributes as single character set the environment variable `EZA_WINDOWS_ATTRIBUTES=short`.  On BSD systems see chflags(1) for a list of file flags and their meanings.
+: List file flags on Mac and BSD systems and file attributes on Windows systems.  By default, Windows attributes are displayed in a long form.  To display in attributes as single character set the environment variable `EVA_WINDOWS_ATTRIBUTES=short`.  On BSD systems see chflags(1) for a list of file flags and their meanings.
 
 `-S`, `--blocksize`
 : List each file’s size of allocated file system blocks.
@@ -275,7 +275,7 @@ Alternatively, `<FORMAT>` can be a two line string, the first line will be used 
 : Suppress the time field.
 
 `--stdin`
-: When you wish to pipe directories to eza/read from stdin. Separate one per line or define custom separation char in `EZA_STDIN_SEPARATOR` env variable.
+: When you wish to pipe directories to eva/read from stdin. Separate one per line or define custom separation char in `EVA_STDIN_SEPARATOR` env variable.
 
 `-@`, `--extended`
 : List each file’s extended attributes and sizes.
@@ -283,15 +283,15 @@ Alternatively, `<FORMAT>` can be a two line string, the first line will be used 
 `-Z`, `--context`
 : List each file's security context.
 
-`--git`  [if eza was built with git support]
+`--git`  [if eva was built with git support]
 : List each file’s Git status, if tracked.
 This adds a two-character column indicating the staged and unstaged statuses respectively. The status character can be ‘`-`’ for not modified, ‘`M`’ for a modified file, ‘`N`’ for a new file, ‘`D`’ for deleted, ‘`R`’ for renamed, ‘`T`’ for type-change, ‘`I`’ for ignored, and ‘`U`’ for conflicted. Directories will be shown to have the status of their contents, which is how ‘deleted’ is possible if a directory contains a file that has a certain status, it will be shown to have that status.
 
-`--git-repos` [if eza was built with git support]
+`--git-repos` [if eva was built with git support]
 : List each directory’s Git status, if tracked.
 Symbols shown are `|`= clean, `+`= dirty, and `~`= for unknown.
 
-`--git-repos-no-status` [if eza was built with git support]
+`--git-repos-no-status` [if eva was built with git support]
 : List if a directory is a Git repository, but not its status.
 All Git repository directories will be shown as (themed) `-` without status indicated.
 
@@ -303,40 +303,40 @@ All Git repository directories will be shown as (themed) `-` without status indi
 ENVIRONMENT VARIABLES
 =====================
 
-If an environment variable prefixed with `EZA_` is not set, for backward compatibility, it will default to its counterpart starting with `EXA_`.
+If an environment variable prefixed with `EVA_` is not set, eva checks the legacy `EZA_` variable, then the older `EXA_` variable where one exists.
 
-eza responds to the following environment variables:
+eva responds to the following primary environment variables:
 
 ## `COLUMNS`
 
 Overrides the width of the terminal, in characters, however, `-w` takes precedence.
 
-For example, ‘`COLUMNS=80 eza`’ will show a grid view with a maximum width of 80 characters.
+For example, ‘`COLUMNS=80 eva`’ will show a grid view with a maximum width of 80 characters.
 
-This option won’t do anything when eza’s output doesn’t wrap, such as when using the `--long` view.
+This option won’t do anything when eva’s output doesn’t wrap, such as when using the `--long` view.
 
-## `EZA_STRICT`
+## `EVA_STRICT`
 
-Enables _strict mode_, which will make eza error when two command-line options are incompatible.
+Enables _strict mode_, which will make eva error when two command-line options are incompatible.
 
-Usually, options can override each other going right-to-left on the command line, so that eza can be given aliases: creating an alias ‘`eza=eza --sort=ext`’ then running ‘`eza --sort=size`’ with that alias will run ‘`eza --sort=ext --sort=size`’, and the sorting specified by the user will override the sorting specified by the alias.
+Usually, options can override each other going right-to-left on the command line, so that eva can be given aliases: creating an alias ‘`eva=eva --sort=ext`’ then running ‘`eva --sort=size`’ with that alias will run ‘`eva --sort=ext --sort=size`’, and the sorting specified by the user will override the sorting specified by the alias.
 
-In strict mode, the two options will not co-operate, and eza will error.
+In strict mode, the two options will not co-operate, and eva will error.
 
 This option is intended for use with automated scripts and other situations where you want to be certain you’re typing in the right command.
 
-## `EZA_GRID_ROWS`
+## `EVA_GRID_ROWS`
 
-Limits the grid-details view (‘`eza --grid --long`’) so it’s only activated when at least the given number of rows of output would be generated.
+Limits the grid-details view (‘`eva --grid --long`’) so it’s only activated when at least the given number of rows of output would be generated.
 
 With widescreen displays, it’s possible for the grid to look very wide and sparse, on just one or two lines with none of the columns lining up.
 By specifying a minimum number of rows, you can only use the view if it’s going to be worth using.
 
-## `EZA_ICON_SPACING`
+## `EVA_ICON_SPACING`
 
 Specifies the number of spaces to print between an icon (see the ‘`--icons`’ option) and its file name.
 
-Different terminals display icons differently, as they usually take up more than one character width on screen, so there’s no “standard” number of spaces that eza can use to separate an icon from text. One space may place the icon too close to the text, and two spaces may place it too far away. So the choice is left up to the user to configure depending on their terminal emulator.
+Different terminals display icons differently, as they usually take up more than one character width on screen, so there’s no “standard” number of spaces that eva can use to separate an icon from text. One space may place the icon too close to the text, and two spaces may place it too far away. So the choice is left up to the user to configure depending on their terminal emulator.
 
 ## `NO_COLOR`
 
@@ -344,32 +344,32 @@ Disables colours in the output (regardless of its value). Can be overridden by `
 
 See `https://no-color.org/` for details.
 
-## `LS_COLORS`, `EZA_COLORS`
+## `LS_COLORS`, `EVA_COLORS`
 
 Specifies the colour scheme used to highlight files based on their name and kind, as well as highlighting metadata and parts of the UI.
 
-For more information on the format of these environment variables, see the [eza_colors.5.md](eza_colors.5.md) manual page.
+For more information on the format of these environment variables, see the [eva_colors.5.md](eva_colors.5.md) manual page.
 
-## `EZA_OVERRIDE_GIT`
+## `EVA_OVERRIDE_GIT`
 
 Overrides any `--git` or `--git-repos` argument
 
-## `EZA_MIN_LUMINANCE`
+## `EVA_MIN_LUMINANCE`
 Specifies the minimum luminance to use when color-scale is active. It's value can be between -100 to 100.
 
-## `EZA_ICONS_AUTO`
+## `EVA_ICONS_AUTO`
 
 If set, automates the same behavior as using `--icons` or `--icons=auto`. Useful for if you always want to have icons enabled.
 
 Any explicit use of the `--icons=WHEN` flag overrides this behavior.
 
-## `EZA_STDIN_SEPARATOR`
+## `EVA_STDIN_SEPARATOR`
 
 Specifies the separator to use when file names are piped from stdin. Defaults to newline.
 
-## `EZA_CONFIG_DIR`
+## `EVA_CONFIG_DIR`
 
-Specifies the directory where eza will look for its configuration and theme files. Defaults to `$XDG_CONFIG_HOME/eza` or `$HOME/.config/eza` if `XDG_CONFIG_HOME` is not set.
+Specifies the directory where eva will look for its configuration and theme files. Defaults to `$XDG_CONFIG_HOME/eva` or `$HOME/.config/eva` if `XDG_CONFIG_HOME` is not set. If no eva theme is found, eva also checks legacy `EZA_CONFIG_DIR`, `$XDG_CONFIG_HOME/eza`, and `$HOME/.config/eza` locations.
 
 EXIT STATUSES
 =============
@@ -390,15 +390,14 @@ EXIT STATUSES
 AUTHOR
 ======
 
-eza is maintained by Christina Sørensen and many other contributors.
+eva is maintained as a personal fork of eza.
 
-**Source code:** `https://github.com/eza-community/eza` \
-**Contributors:** `https://github.com/eza-community/eza/graphs/contributors`
+**Source code:** `https://github.com/vivek-x-jha/eva`
 
-Our infinite thanks to Benjamin ‘ogham’ Sago and all the other contributors of exa, from which eza was forked.
+Our infinite thanks to the eza and exa contributors whose work this fork builds on.
 
 SEE ALSO
 ========
 
-- [**eza_colors**(5)](eza_colors.5.md)
-- [**eza_colors-explanation**(5)](eza_colors-explanation.5.md)
+- [**eva_colors**(5)](eva_colors.5.md)
+- [**eva_colors-explanation**(5)](eva_colors-explanation.5.md)

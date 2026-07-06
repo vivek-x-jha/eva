@@ -139,6 +139,7 @@ impl Default for UiStyles {
             broken_symlink: Some(Red.normal()),
             broken_path_overlay: Some(Style::default().underline()),
 
+            icons: None,
             filenames: None,
             extensions: None,
         }

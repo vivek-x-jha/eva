@@ -7,6 +7,13 @@ filekinds:
     foreground: Cyan
   executable:
     foreground: Green
+icons:
+  # Sparse defaults for built-in fallback icons. Named directory icons,
+  # filename overrides, and extension overrides still take precedence.
+  folder: { glyph: "" }
+  empty_folder: { glyph: "" }
+  file: { glyph: "" }
+  unknown_file: { glyph: "󰡯" }
 perms:
   user_read:
     foreground: Yellow

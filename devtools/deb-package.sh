@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-REPO_URL="https://github.com/eza-community/eza"
-NAME="eza"
+REPO_URL="https://github.com/vivek-x-jha/eva"
+NAME="eva"
 DESTDIR=/usr/bin
 DOCDIR=/usr/share/man/
 
@@ -64,15 +64,15 @@ for ARCH in "${!TARGETS[@]}"; do
     chmod 755 "${DEB_TMP_DIR}${DESTDIR}/${NAME}"
 
     echo " -> compress man pages"
-    gzip -cn9 target/man/eza.1 > "${DEB_TMP_DIR}${DOCDIR}man1/eza.1.gz"
-    gzip -cn9 target/man/eza_colors.5 > "${DEB_TMP_DIR}${DOCDIR}man5/eza_colors.5.gz"
-    gzip -cn9 target/man/eza_colors-explanation.5 > "${DEB_TMP_DIR}${DOCDIR}man5/eza_colors-explanation.5.gz"
+    gzip -cn9 target/man/eva.1 > "${DEB_TMP_DIR}${DOCDIR}man1/eva.1.gz"
+    gzip -cn9 target/man/eva_colors.5 > "${DEB_TMP_DIR}${DOCDIR}man5/eva_colors.5.gz"
+    gzip -cn9 target/man/eva_colors-explanation.5 > "${DEB_TMP_DIR}${DOCDIR}man5/eva_colors-explanation.5.gz"
     chmod 644 "${DEB_TMP_DIR}${DOCDIR}"/**/*.gz
 
     echo " -> copy completions"
-    cp completions/bash/eza "${DEB_TMP_DIR}/usr/share/bash-completion/completions/"
-    cp completions/fish/eza.fish "${DEB_TMP_DIR}/usr/share/fish/vendor_completions.d/"
-    cp completions/zsh/_eza "${DEB_TMP_DIR}/usr/share/zsh/vendor-completions/"
+    cp completions/bash/eva "${DEB_TMP_DIR}/usr/share/bash-completion/completions/"
+    cp completions/fish/eva.fish "${DEB_TMP_DIR}/usr/share/fish/vendor_completions.d/"
+    cp completions/zsh/_eva "${DEB_TMP_DIR}/usr/share/zsh/vendor-completions/"
 
     echo " -> create control file"
     touch "${DEB_TMP_DIR}/DEBIAN/control"
@@ -84,10 +84,10 @@ Priority: optional
 Architecture: ${ARCH}
 Depends: libc6
 Maintainer: Sandro-Alessio Gierens <sandro@gierens.de>
-Description: Modern replacement for ls
- eza is a modern replacement for ls.  It uses colours for information by
- default, helping you distinguish between many types of files, such as whether
- you are the owner, or in the owning group.
+Description: Personal fork of eza, a modern replacement for ls
+ eva is a personal fork of eza and a modern replacement for ls. It uses colours
+ for information by default, helping you distinguish between many types of files,
+ such as whether you are the owner, or in the owning group.
  .
  It also has extra features not present in the original ls, such as viewing the
  Git status for a directory, or recursing into directories with a tree view.
@@ -106,7 +106,7 @@ EOM
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: ${NAME}
 Upstream-Contact: Christina Sørensen <christina@cafkafk.com>
-Source: https://github.com/eza-community/eza/releases
+Source: https://github.com/vivek-x-jha/eva/releases
 
 Files: *
 License: MIT

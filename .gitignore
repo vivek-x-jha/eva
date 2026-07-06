@@ -18,11 +18,11 @@ target
 
 # Compiled artifacts
 # (see devtools/*-package-for-*.sh)
-/eza-linux-x86_64
-/eza-linux-x86_64-*.zip
-/eza-macos-x86_64
-/eza-macos-x86_64-*.zip
-/eza_*.deb
+/eva-linux-x86_64
+/eva-linux-x86_64-*.zip
+/eva-macos-x86_64
+/eva-macos-x86_64-*.zip
+/eva_*.deb
 /MD5SUMS
 /SHA1SUMS
 
