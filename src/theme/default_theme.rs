@@ -10,8 +10,8 @@ use std::default::Default;
 
 use crate::output::color_scale::{ColorScaleMode, ColorScaleOptions};
 use crate::theme::ui_styles::{
-    FileKinds, FileType, Git, GitRepo, Links, Permissions, SELinuxContext, SecurityContext, Size,
-    UiStyles, Users,
+    FileKinds, FileType, Git, GitMarkers, GitRepo, IconStyle, IconTheme, Links, Permissions,
+    SELinuxContext, SecurityContext, Size, UiStyles, Users,
 };
 impl UiStyles {
     #[must_use]
@@ -82,15 +82,8 @@ impl Default for UiStyles {
             }),
 
             #[rustfmt::skip]
-            git: Some(Git {
-                new:         Some(Green.normal()),
-                modified:    Some(Blue.normal()),
-                deleted:     Some(Red.normal()),
-                renamed:     Some(Yellow.normal()),
-                typechange:  Some(Purple.normal()),
-                ignored:     Some(Style::default().dimmed()),
-                conflicted:  Some(Red.normal()),
-            }),
+            git: Some(Git::default()),
+            git_markers: Some(GitMarkers::default()),
 
             git_repo: Some(GitRepo {
                 branch_main: Some(Green.normal()),
@@ -139,7 +132,24 @@ impl Default for UiStyles {
             broken_symlink: Some(Red.normal()),
             broken_path_overlay: Some(Style::default().underline()),
 
-            icons: None,
+            icons: Some(IconTheme {
+                folder: Some(IconStyle {
+                    glyph: Some(''),
+                    style: None,
+                }),
+                empty_folder: Some(IconStyle {
+                    glyph: Some(''),
+                    style: None,
+                }),
+                file: Some(IconStyle {
+                    glyph: Some(''),
+                    style: None,
+                }),
+                unknown_file: Some(IconStyle {
+                    glyph: Some(''),
+                    style: None,
+                }),
+            }),
             filenames: None,
             extensions: None,
         }

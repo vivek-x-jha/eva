@@ -7,7 +7,7 @@
 use crate::options::{Vars, vars};
 use crate::theme::ThemeFileType as FileType;
 use crate::theme::{
-    FileKinds, FileNameStyle, Git, GitRepo, IconStyle, IconTheme, Links, Permissions,
+    FileKinds, FileNameStyle, Git, GitMarkers, GitRepo, IconStyle, IconTheme, Links, Permissions,
     SELinuxContext, SecurityContext, Size, UiStyles, Users,
 };
 use nu_ansi_term::{Color, Style};
@@ -528,6 +528,7 @@ impl FromOverride<LinksOverride> for Links {
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug,Eq, PartialEq, Serialize, Deserialize)]
 pub struct GitOverride {
+    pub staged: Option<StyleOverride>,
     pub new: Option<StyleOverride>,         // ga
     pub modified: Option<StyleOverride>,    // gm
     pub deleted: Option<StyleOverride>,     // gd
@@ -540,6 +541,37 @@ pub struct GitOverride {
 impl FromOverride<GitOverride> for Git {
     fn from(value: GitOverride, default: Self) -> Self {
         Git {
+            staged: FromOverride::from(value.staged, default.staged),
+            new: FromOverride::from(value.new, default.new),
+            modified: FromOverride::from(value.modified, default.modified),
+            deleted: FromOverride::from(value.deleted, default.deleted),
+            renamed: FromOverride::from(value.renamed, default.renamed),
+            typechange: FromOverride::from(value.typechange, default.typechange),
+            ignored: FromOverride::from(value.ignored, default.ignored),
+            conflicted: FromOverride::from(value.conflicted, default.conflicted),
+        }
+    }
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GitMarkersOverride {
+    pub not_modified: Option<char>,
+    pub staged: Option<char>,
+    pub new: Option<char>,
+    pub modified: Option<char>,
+    pub deleted: Option<char>,
+    pub renamed: Option<char>,
+    pub typechange: Option<char>,
+    pub ignored: Option<char>,
+    pub conflicted: Option<char>,
+}
+
+impl FromOverride<GitMarkersOverride> for GitMarkers {
+    fn from(value: GitMarkersOverride, default: Self) -> Self {
+        GitMarkers {
+            not_modified: FromOverride::from(value.not_modified, default.not_modified),
+            staged: FromOverride::from(value.staged, default.staged),
             new: FromOverride::from(value.new, default.new),
             modified: FromOverride::from(value.modified, default.modified),
             deleted: FromOverride::from(value.deleted, default.deleted),
@@ -653,6 +685,7 @@ pub struct UiStylesOverride {
     pub users:            Option<UsersOverride>,
     pub links:            Option<LinksOverride>,
     pub git:              Option<GitOverride>,
+    pub git_markers:      Option<GitMarkersOverride>,
     pub git_repo:         Option<GitRepoOverride>,
     pub security_context: Option<SecurityContextOverride>,
     pub file_type:        Option<FileTypeOverride>,
@@ -686,6 +719,7 @@ impl FromOverride<UiStylesOverride> for UiStyles {
             users: FromOverride::from(value.users, default.users),
             links: FromOverride::from(value.links, default.links),
             git: FromOverride::from(value.git, default.git),
+            git_markers: FromOverride::from(value.git_markers, default.git_markers),
             git_repo: FromOverride::from(value.git_repo, default.git_repo),
             security_context: FromOverride::from(value.security_context, default.security_context),
             file_type: FromOverride::from(value.file_type, default.file_type),

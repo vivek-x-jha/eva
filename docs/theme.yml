@@ -1,6 +1,4 @@
 filekinds:
-  normal:
-    foreground: Blue
   directory:
     foreground: Blue
   symlink:
@@ -10,10 +8,27 @@ filekinds:
 icons:
   # Sparse defaults for built-in fallback icons. Named directory icons,
   # filename overrides, and extension overrides still take precedence.
-  folder: { glyph: "" }
-  empty_folder: { glyph: "" }
-  file: { glyph: "" }
-  unknown_file: { glyph: "󰡯" }
+  folder: { glyph: "" }
+  empty_folder: { glyph: "" }
+  file: { glyph: "" }
+  unknown_file: { glyph: "" }
+git:
+  staged: { foreground: Green }
+  new: { foreground: Red }
+  modified: { foreground: Yellow }
+  deleted: { foreground: Red }
+  renamed: { foreground: Yellow }
+  typechange: { foreground: Yellow }
+  ignored: { foreground: DarkGray }
+  conflicted: { foreground: LightRed }
+git_markers:
+  staged: "+"
+  new: "?"
+  modified: "~"
+  renamed: "~"
+  typechange: "~"
+  ignored: "I"
+  conflicted: "!"
 perms:
   user_read:
     foreground: Yellow

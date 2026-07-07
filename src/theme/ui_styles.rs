@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 use crate::theme::lsc::Pair;
 use nu_ansi_term::{
-    Color::{Blue, Cyan, Green, Purple, Red, Yellow},
+    Color::{Blue, Cyan, DarkGray, Green, LightRed, Red, Yellow},
     Style,
 };
 use serde::{Deserialize, Serialize};
@@ -44,6 +44,7 @@ pub struct UiStyles {
     pub users:            Option<Users>,
     pub links:            Option<Links>,
     pub git:              Option<Git>,
+    pub git_markers:      Option<GitMarkers>,
     pub git_repo:         Option<GitRepo>,
     pub security_context: Option<SecurityContext>,
     pub file_type:        Option<FileType>,
@@ -106,6 +107,7 @@ update_field_accessors!(
     users: Option<Users>,
     links: Option<Links>,
     git: Option<Git>,
+    git_markers: Option<GitMarkers>,
     git_repo: Option<GitRepo>
 );
 
@@ -273,6 +275,7 @@ field_accessors!(Links, normal: Option<Style>, multi_link_file: Option<Style>);
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug,Eq, PartialEq, Serialize, Deserialize)]
 pub struct Git {
+    pub staged: Option<Style>,      // staged column override
     pub new: Option<Style>,         // ga
     pub modified: Option<Style>,    // gm
     pub deleted: Option<Style>,     // gd
@@ -284,6 +287,7 @@ pub struct Git {
 
 field_accessors!(
     Git,
+    staged: Option<Style>,
     new: Option<Style>,
     modified: Option<Style>,
     deleted: Option<Style>,
@@ -295,13 +299,56 @@ field_accessors!(
 impl Default for Git {
     fn default() -> Self {
         Git {
-            new: Some(Green.normal()),
-            modified: Some(Blue.normal()),
+            staged: Some(Green.normal()),
+            new: Some(Red.normal()),
+            modified: Some(Yellow.normal()),
             deleted: Some(Red.normal()),
             renamed: Some(Yellow.normal()),
-            typechange: Some(Purple.normal()),
-            ignored: Some(Style::default().dimmed()),
-            conflicted: Some(Red.normal()),
+            typechange: Some(Yellow.normal()),
+            ignored: Some(DarkGray.normal()),
+            conflicted: Some(LightRed.normal()),
+        }
+    }
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct GitMarkers {
+    pub not_modified: Option<char>,
+    pub staged: Option<char>,
+    pub new: Option<char>,
+    pub modified: Option<char>,
+    pub deleted: Option<char>,
+    pub renamed: Option<char>,
+    pub typechange: Option<char>,
+    pub ignored: Option<char>,
+    pub conflicted: Option<char>,
+}
+
+field_accessors!(
+    GitMarkers,
+    not_modified: Option<char>,
+    staged: Option<char>,
+    new: Option<char>,
+    modified: Option<char>,
+    deleted: Option<char>,
+    renamed: Option<char>,
+    typechange: Option<char>,
+    ignored: Option<char>,
+    conflicted: Option<char>
+);
+impl Default for GitMarkers {
+    fn default() -> Self {
+        GitMarkers {
+            not_modified: Some('-'),
+            staged: Some('+'),
+            new: Some('?'),
+            modified: Some('~'),
+            deleted: Some('D'),
+            renamed: Some('~'),
+            typechange: Some('~'),
+            ignored: Some('I'),
+            conflicted: Some('!'),
         }
     }
 }
@@ -454,6 +501,7 @@ impl UiStyles {
 
             #[rustfmt::skip]
             git: Some(Git {
+                staged:      Some(Style::default()),
                 new:         Some(Style::default()),
                 modified:    Some(Style::default()),
                 deleted:     Some(Style::default()),
@@ -462,6 +510,8 @@ impl UiStyles {
                 ignored:     Some(Style::default()),
                 conflicted:  Some(Style::default()),
             }),
+
+            git_markers: Some(GitMarkers::default()),
 
             git_repo: Some(GitRepo {
                 branch_main: Some(Style::default()),

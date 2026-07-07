@@ -37,15 +37,6 @@ impl Icons {
     const FILE: char            = '\u{f15b}';  // 
     const FILE_3D: char         = '\u{f01a7}'; // 󰆧
     const FOLDER: char          = '\u{e5ff}';  // 
-    const FOLDER_BUILD: char    = '\u{f19fc}'; // 󱧼
-    const FOLDER_CONFIG: char   = '\u{e5fc}';  // 
-    const FOLDER_EXERCISM: char = '\u{ebe5}';  // 
-    const FOLDER_GIT: char      = '\u{e5fb}';  // 
-    const FOLDER_GITHUB: char   = '\u{e5fd}';  // 
-    const FOLDER_HIDDEN: char   = '\u{f179e}'; // 󱞞
-    const FOLDER_KEY: char      = '\u{f08ac}'; // 󰢬
-    const FOLDER_NPM: char      = '\u{e5fa}';  // 
-    const FOLDER_OCAML: char    = '\u{e67a}';  // 
     const FOLDER_OPEN: char     = '\u{f115}';  // 
     const FILE_UNKNOW: char     = '\u{f086f}'; // 󰡯
     const FONT: char            = '\u{f031}';  // 
@@ -158,51 +149,6 @@ impl Icons {
     const YAML: char            = '\u{e8eb}';  // 
     const YARN: char            = '\u{e6a7}';  // 
 }
-
-/// Mapping from full filenames to directory icon. This mapping should contain
-/// all the directories that have a custom icon.
-const DIRECTORY_ICONS: Map<&'static str, char> = phf_map! {
-    ".config"             => Icons::FOLDER_CONFIG,  // 
-    ".exercism"           => Icons::FOLDER_EXERCISM,// 
-    ".git"                => Icons::FOLDER_GIT,     // 
-    ".github"             => Icons::FOLDER_GITHUB,  // 
-    ".npm"                => Icons::FOLDER_NPM,     // 
-    ".opam"               => Icons::FOLDER_OCAML,   // 
-    ".ssh"                => Icons::FOLDER_KEY,     // 󰢬
-    ".Trash"              => '\u{f1f8}',            // 
-    "build"               => Icons::FOLDER_BUILD,   // 󱧼
-    "config"              => Icons::FOLDER_CONFIG,  // 
-    "Contacts"            => '\u{f024c}',           // 󰉌
-    "cron.d"              => Icons::FOLDER_CONFIG,  // 
-    "cron.daily"          => Icons::FOLDER_CONFIG,  // 
-    "cron.hourly"         => Icons::FOLDER_CONFIG,  // 
-    "cron.minutely"       => Icons::FOLDER_CONFIG,  // 
-    "cron.monthly"        => Icons::FOLDER_CONFIG,  // 
-    "cron.weekly"         => Icons::FOLDER_CONFIG,  // 
-    "Desktop"             => '\u{f108}',            // 
-    "Documents"           => '\u{f0c82}',           // 󰲂
-    "Downloads"           => '\u{f024d}',           // 󰉍
-    "etc"                 => Icons::FOLDER_CONFIG,  // 
-    "Favorites"           => '\u{f069d}',           // 󰚝
-    "hidden"              => Icons::FOLDER_HIDDEN,  // 󱞞
-    "home"                => '\u{f10b5}',           // 󱂵
-    "include"             => Icons::FOLDER_CONFIG,  // 
-    "Mail"                => '\u{f01f0}',           // 󰇰
-    "Movies"              => '\u{f0fce}',           // 󰿎
-    "Music"               => '\u{f1359}',           // 󱍙
-    "node_modules"        => Icons::FOLDER_NPM,     // 
-    "npm_cache"           => Icons::FOLDER_NPM,     // 
-    "pacman.d"            => Icons::FOLDER_CONFIG,  // 
-    "pam.d"               => Icons::FOLDER_KEY,     // 󰢬
-    "Pictures"            => '\u{f024f}',           // 󰉏
-    "src"                 => '\u{f08de}',           // 󰣞
-    "ssh"                 => Icons::FOLDER_KEY,     // 󰢬
-    "sudoers.d"           => Icons::FOLDER_KEY,     // 󰢬
-    "Videos"              => '\u{f03d}',            // 
-    "xbps.d"              => Icons::FOLDER_CONFIG,  // 
-    "xorg.conf.d"         => Icons::FOLDER_CONFIG,  // 
-    "cabal"               => Icons::LANG_HASKELL,   // 
-};
 
 /// Mapping from full filenames to file icon. This mapping should also contain
 /// all the "dot" files that have a custom icon.
@@ -1125,7 +1071,6 @@ pub fn iconify_style(style: Style) -> Style {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum IconKind {
-    NamedDirectory,
     Directory,
     EmptyDirectory,
     Filename,
@@ -1137,9 +1082,7 @@ pub enum IconKind {
 /// Classify which built-in icon bucket a file would use.
 pub fn icon_kind_for_file(file: &File<'_>) -> IconKind {
     if file.points_to_directory() {
-        if DIRECTORY_ICONS.contains_key(file.name.as_str()) {
-            IconKind::NamedDirectory
-        } else if file.is_empty_dir() {
+        if file.is_empty_dir() {
             IconKind::EmptyDirectory
         } else {
             IconKind::Directory
@@ -1161,9 +1104,6 @@ pub fn icon_kind_for_file(file: &File<'_>) -> IconKind {
 /// directory, or by the lowercase file extension.
 pub fn icon_for_file(file: &File<'_>) -> char {
     match icon_kind_for_file(file) {
-        IconKind::NamedDirectory => *DIRECTORY_ICONS
-            .get(file.name.as_str())
-            .unwrap_or(&Icons::FOLDER),
         IconKind::Directory => Icons::FOLDER,           // 
         IconKind::EmptyDirectory => Icons::FOLDER_OPEN, // 
         IconKind::Filename => *FILENAME_ICONS

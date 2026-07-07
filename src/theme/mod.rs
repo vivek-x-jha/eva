@@ -364,6 +364,7 @@ impl render::FiletypeColours for Theme {
 #[rustfmt::skip]
 impl render::GitColours for Theme {
     fn not_modified(&self)  -> Style { self.ui.punctuation() }
+    fn staged(&self)        -> Style { self.ui.git.unwrap_or_default().staged() }
     #[allow(clippy::new_ret_no_self)]
     fn new(&self)           -> Style { self.ui.git.unwrap_or_default().new() }
     fn modified(&self)      -> Style { self.ui.git.unwrap_or_default().modified() }
@@ -372,6 +373,16 @@ impl render::GitColours for Theme {
     fn type_change(&self)   -> Style { self.ui.git.unwrap_or_default().typechange() }
     fn ignored(&self)       -> Style { self.ui.git.unwrap_or_default().ignored() }
     fn conflicted(&self)    -> Style { self.ui.git.unwrap_or_default().conflicted() }
+
+    fn not_modified_marker(&self) -> char { self.ui.git_markers.unwrap_or_default().not_modified() }
+    fn staged_marker(&self)       -> char { self.ui.git_markers.unwrap_or_default().staged() }
+    fn new_marker(&self)          -> char { self.ui.git_markers.unwrap_or_default().new() }
+    fn modified_marker(&self)     -> char { self.ui.git_markers.unwrap_or_default().modified() }
+    fn deleted_marker(&self)      -> char { self.ui.git_markers.unwrap_or_default().deleted() }
+    fn renamed_marker(&self)      -> char { self.ui.git_markers.unwrap_or_default().renamed() }
+    fn type_change_marker(&self)  -> char { self.ui.git_markers.unwrap_or_default().typechange() }
+    fn ignored_marker(&self)      -> char { self.ui.git_markers.unwrap_or_default().ignored() }
+    fn conflicted_marker(&self)   -> char { self.ui.git_markers.unwrap_or_default().conflicted() }
 }
 
 #[rustfmt::skip]
@@ -501,7 +512,7 @@ impl FileNameColours for Theme {
             IconKind::EmptyDirectory => icons.empty_folder.or(icons.folder),
             IconKind::File => icons.file,
             IconKind::UnknownFile => icons.unknown_file,
-            IconKind::NamedDirectory | IconKind::Filename | IconKind::Extension => None,
+            IconKind::Filename | IconKind::Extension => None,
         }
     }
 }
@@ -591,6 +602,7 @@ mod customs_test {
         std::fs::write(root.join("full/file"), "content").unwrap();
         std::fs::create_dir_all(root.join("empty")).unwrap();
         std::fs::create_dir_all(root.join("src")).unwrap();
+        std::fs::write(root.join("src/file"), "content").unwrap();
         std::fs::write(root.join("plain.unknownext"), "content").unwrap();
         std::fs::write(root.join("noext"), "content").unwrap();
 
@@ -643,7 +655,12 @@ mod customs_test {
                 .glyph,
             Some('E')
         );
-        assert_eq!(FileNameColours::icon_override(&theme, &named), None);
+        assert_eq!(
+            FileNameColours::icon_override(&theme, &named)
+                .unwrap()
+                .glyph,
+            Some('F')
+        );
         assert_eq!(
             FileNameColours::icon_override(&theme, &file).unwrap().glyph,
             Some('f')
