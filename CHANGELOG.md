@@ -6,6 +6,19 @@ SPDX-License-Identifier: EUPL-1.2
 -->
 # Changelog
 
+## [0.3.0] - 2026-07-06
+
+### Features
+
+- Add global SourDiesel-inspired filename and extension style defaults while keeping user themes as overrides.
+- Make folder and empty-folder icons true semantic defaults for all directories, ignoring filename and extension style collisions.
+- Add configurable one-column Git markers with staged files shown as `+` and p10k-aligned status glyphs/colors.
+- Support named 16-color palette aliases such as `brightyellow`, `brightblack`, `base0B`, and `color11` in `theme.yml`.
+
+### Bug Fixes
+
+- Make mount points inherit the final directory style unless `filekinds.mount_point` is explicitly configured.
+
 ## [0.2.0] - 2026-07-06
 
 ### Features

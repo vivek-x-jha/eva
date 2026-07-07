@@ -153,6 +153,25 @@ fn color_from_str(s: &str) -> Option<Color> {
         "white"        | "White"        => Some(White),
         "lightgray"    | "LightGray"    => Some(LightGray),
 
+        // 16-colour palette aliases. These are fixed ANSI palette indexes so
+        // theme files can use names such as `brightyellow` instead of `11`.
+        "base00" | "Base00" | "color0"  | "Color0"  => Some(Fixed(0)),
+        "base01" | "Base01" | "color1"  | "Color1"  => Some(Fixed(1)),
+        "base02" | "Base02" | "color2"  | "Color2"  => Some(Fixed(2)),
+        "base03" | "Base03" | "color3"  | "Color3"  => Some(Fixed(3)),
+        "base04" | "Base04" | "color4"  | "Color4"  => Some(Fixed(4)),
+        "base05" | "Base05" | "color5"  | "Color5"  => Some(Fixed(5)),
+        "base06" | "Base06" | "color6"  | "Color6"  => Some(Fixed(6)),
+        "base07" | "Base07" | "color7"  | "Color7"  => Some(Fixed(7)),
+        "base08" | "Base08" | "color8"  | "Color8"  | "brightblack"  | "BrightBlack"  => Some(Fixed(8)),
+        "base09" | "Base09" | "color9"  | "Color9"  | "brightred"    | "BrightRed"    => Some(Fixed(9)),
+        "base0A" | "Base0A" | "base0a" | "Base0a" | "color10" | "Color10" | "brightgreen"  | "BrightGreen"  => Some(Fixed(10)),
+        "base0B" | "Base0B" | "base0b" | "Base0b" | "color11" | "Color11" | "brightyellow" | "BrightYellow" => Some(Fixed(11)),
+        "base0C" | "Base0C" | "base0c" | "Base0c" | "color12" | "Color12" | "brightblue"   | "BrightBlue"   => Some(Fixed(12)),
+        "base0D" | "Base0D" | "base0d" | "Base0d" | "color13" | "Color13" | "brightmagenta"| "BrightMagenta"=> Some(Fixed(13)),
+        "base0E" | "Base0E" | "base0e" | "Base0e" | "color14" | "Color14" | "brightcyan"   | "BrightCyan"   => Some(Fixed(14)),
+        "base0F" | "Base0F" | "base0f" | "Base0f" | "color15" | "Color15" | "brightwhite"  | "BrightWhite"  => Some(Fixed(15)),
+
         // some other string
         s => match s.chars().collect::<Vec<_>>()[..] {
             // #rrggbb hex color
@@ -888,6 +907,24 @@ icons:
     #[test]
     fn parse_color_code_from_string() {
         for (s, c) in &[("118", 118), ("10", 10), ("01", 1), ("1", 1), ("001", 1)] {
+            assert_eq!(color_from_str(s), Some(Color::Fixed(*c)));
+        }
+    }
+
+    #[test]
+    fn parse_base16_color_names_from_string() {
+        for (s, c) in &[
+            ("brightblack", 8),
+            ("BrightRed", 9),
+            ("brightgreen", 10),
+            ("brightyellow", 11),
+            ("brightblue", 12),
+            ("brightmagenta", 13),
+            ("brightcyan", 14),
+            ("brightwhite", 15),
+            ("base0B", 11),
+            ("color11", 11),
+        ] {
             assert_eq!(color_from_str(s), Some(Color::Fixed(*c)));
         }
     }

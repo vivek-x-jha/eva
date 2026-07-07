@@ -153,7 +153,7 @@ impl Default for FileKinds {
             socket: Some(Red.bold()),
             special: Some(Yellow.normal()),
             executable: Some(Green.bold()),
-            mount_point: Some(Blue.bold().underline()),
+            mount_point: None,
         }
     }
 }
@@ -457,7 +457,7 @@ impl UiStyles {
             socket: Some(Style::default()),
             special: Some(Style::default()),
             executable: Some(Style::default()),
-            mount_point: Some(Style::default()),
+            mount_point: None,
             }),
 
             #[rustfmt::skip]

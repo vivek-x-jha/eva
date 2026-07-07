@@ -24,6 +24,7 @@ pub(crate) use self::ui_styles::*;
 mod lsc;
 pub use self::lsc::LSColors;
 
+mod default_file_styles;
 mod default_theme;
 
 #[derive(PartialEq, Eq, Debug)]
@@ -482,7 +483,10 @@ impl FileNameColours for Theme {
     fn control_char(&self)        -> Style { self.ui.control_char() }
     fn broken_control_char(&self) -> Style { apply_overlay(self.ui.control_char(),   self.ui.broken_path_overlay()) }
     fn executable_file(&self)     -> Style { self.ui.filekinds.unwrap_or_default().executable() }
-    fn mount_point(&self)         -> Style { self.ui.filekinds.unwrap_or_default().mount_point() }
+    fn mount_point(&self)         -> Style {
+        let filekinds = self.ui.filekinds.unwrap_or_default();
+        filekinds.mount_point.unwrap_or_else(|| filekinds.directory())
+    }
 
     fn colour_file(&self, file: &File<'_>) -> Style {
         self.exts
@@ -586,6 +590,40 @@ mod customs_test {
             }
             out
         }
+    }
+
+    #[test]
+    fn mount_point_style_falls_back_to_directory_style() {
+        let theme = Theme {
+            ui: UiStyles {
+                filekinds: Some(FileKinds {
+                    directory: Some(Fixed(4).normal()),
+                    mount_point: None,
+                    ..FileKinds::default()
+                }),
+                ..UiStyles::default()
+            },
+            exts: Box::new(NoFileStyle),
+        };
+
+        assert_eq!(FileNameColours::mount_point(&theme), Fixed(4).normal());
+    }
+
+    #[test]
+    fn explicit_mount_point_style_overrides_directory_style() {
+        let theme = Theme {
+            ui: UiStyles {
+                filekinds: Some(FileKinds {
+                    directory: Some(Fixed(4).normal()),
+                    mount_point: Some(Fixed(5).normal()),
+                    ..FileKinds::default()
+                }),
+                ..UiStyles::default()
+            },
+            exts: Box::new(NoFileStyle),
+        };
+
+        assert_eq!(FileNameColours::mount_point(&theme), Fixed(5).normal());
     }
 
     #[test]

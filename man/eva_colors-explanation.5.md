@@ -113,10 +113,23 @@ links:
   multi_link_file
 
 git:
+  staged
   new
   modified
   deleted
   renamed
+  typechange
+  ignored
+  conflicted
+
+git_markers:
+  not_modified
+  staged
+  new
+  modified
+  deleted
+  renamed
+  typechange
   ignored
   conflicted
 
@@ -214,13 +227,13 @@ Icons can now be customized sparsely in the `icons`, `filenames`, and `extension
 
 ```yaml
 icons:
-  folder: { glyph: "" }
-  empty_folder: { glyph: "" }
-  file: { glyph: "" }
-  unknown_file: { glyph: "󰡯" }
+  folder: { glyph: "" }
+  empty_folder: { glyph: "" }
+  file: { glyph: "" }
+  unknown_file: { glyph: "" }
 ```
 
-Named directory icons, filename overrides, and extension overrides take precedence over these defaults. If `empty_folder` is unset, empty directories use `folder`. Use `filenames` and `extensions` for exact per-name or per-extension changes:
+Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename and extension overrides apply to files only, so names such as `.config` or `.cache` cannot override directory icon or color precedence. Use `filenames` and `extensions` for exact per-name or per-extension file changes:
 
 ```yaml
 filenames:
@@ -231,6 +244,27 @@ filenames:
 extensions:
   rs: {  filename: {foreground: Red}, icon: {glyph: 🦀}}
 ```
+
+Git status output uses one marker column. Staged entries use the `staged` marker and color; otherwise eva uses the unstaged status marker. The marker glyphs are configurable separately from styles:
+
+```yaml
+git:
+  staged: { foreground: brightgreen }
+  new: { foreground: red }
+  modified: { foreground: yellow }
+  ignored: { foreground: brightblack }
+  conflicted: { foreground: brightred }
+git_markers:
+  staged: "+"
+  new: "?"
+  modified: "~"
+  ignored: "I"
+  conflicted: "!"
+```
+
+In addition to color names such as `red`, `blue`, and `lightred`, eva accepts fixed 16-color palette aliases such as `brightblack` through `brightwhite`, `base00` through `base0F`, and `color0` through `color15`. For example, `brightyellow`, `base0B`, and `color11` all select fixed color 11.
+
+Mount points inherit the final directory style unless `filekinds.mount_point` is explicitly configured.
 
 **NOTES:** 
 

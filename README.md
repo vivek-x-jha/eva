@@ -185,14 +185,31 @@ Check out the themes available in the official [eza-themes](https://github.com/e
 An example theme file is available in `docs/theme.yml`, and needs to either be placed in a directory specified by the 
 environment variable `EVA_CONFIG_DIR`, or will be looked for by default in `$XDG_CONFIG_HOME/eva` with a `$HOME/.config/eva` fallback. If no eva theme is found, eva also checks legacy `EZA_CONFIG_DIR`, `$XDG_CONFIG_HOME/eza`, and `$HOME/.config/eza` locations.
 
-Sparse icon defaults can be set without copying the full built-in icon map. Named directory, filename, and extension icons still take precedence; empty directories use `empty_folder` when set, otherwise `folder`.
+Sparse icon defaults can be set without copying the full built-in icon map. Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename and extension overrides apply to files only, so names such as `.config` or `.cache` cannot steal directory icon/color precedence.
 
 ```yaml
 icons:
-  folder: { glyph: "" }
-  empty_folder: { glyph: "" }
-  file: { glyph: "" }
-  unknown_file: { glyph: "󰡯" }
+  folder: { glyph: "" }
+  empty_folder: { glyph: "" }
+  file: { glyph: "" }
+  unknown_file: { glyph: "" }
+```
+
+Git status markers can also be customized independently from their colors:
+
+```yaml
+git:
+  staged: { foreground: brightgreen }
+  new: { foreground: red }
+  modified: { foreground: yellow }
+  ignored: { foreground: brightblack }
+  conflicted: { foreground: brightred }
+git_markers:
+  staged: "+"
+  new: "?"
+  modified: "~"
+  ignored: "I"
+  conflicted: "!"
 ```
 
 Full details are available on the [man page](man/eva_colors-explanation.5.md) and an example theme file is included [here](docs/theme.yml)

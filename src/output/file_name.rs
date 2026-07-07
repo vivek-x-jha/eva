@@ -207,7 +207,10 @@ impl<C: Colours> FileName<'_, '_, C> {
         let mut bits = Vec::new();
         let (icon_override, filename_style_override) = match self.colours.style_override(self.file)
         {
-            Some(FileNameStyle { icon, filename }) => (icon, filename),
+            Some(FileNameStyle { icon, filename }) if !self.file.points_to_directory() => {
+                (icon, filename)
+            }
+            Some(FileNameStyle { .. }) => (None, None),
             None => (None, None),
         };
         let icon_override = icon_override.or_else(|| self.colours.icon_override(self.file));
@@ -545,5 +548,126 @@ pub trait Colours: FiletypeColours {
 
     fn icon_override(&self, _file: &File<'_>) -> Option<IconStyle> {
         None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::output::render::FiletypeColours;
+    use nu_ansi_term::Color::Fixed;
+
+    struct TestColours;
+
+    impl FiletypeColours for TestColours {
+        fn normal(&self) -> Style {
+            Fixed(1).normal()
+        }
+        fn directory(&self) -> Style {
+            Fixed(4).normal()
+        }
+        fn pipe(&self) -> Style {
+            Fixed(5).normal()
+        }
+        fn symlink(&self) -> Style {
+            Fixed(6).normal()
+        }
+        fn block_device(&self) -> Style {
+            Fixed(7).normal()
+        }
+        fn char_device(&self) -> Style {
+            Fixed(8).normal()
+        }
+        fn socket(&self) -> Style {
+            Fixed(9).normal()
+        }
+        fn special(&self) -> Style {
+            Fixed(10).normal()
+        }
+    }
+
+    impl Colours for TestColours {
+        fn symlink_path(&self) -> Style {
+            Fixed(11).normal()
+        }
+        fn normal_arrow(&self) -> Style {
+            Fixed(12).normal()
+        }
+        fn broken_symlink(&self) -> Style {
+            Fixed(13).normal()
+        }
+        fn broken_filename(&self) -> Style {
+            Fixed(14).normal()
+        }
+        fn control_char(&self) -> Style {
+            Fixed(15).normal()
+        }
+        fn broken_control_char(&self) -> Style {
+            Fixed(16).normal()
+        }
+        fn executable_file(&self) -> Style {
+            Fixed(17).normal()
+        }
+        fn mount_point(&self) -> Style {
+            Fixed(18).normal()
+        }
+        fn colour_file(&self, _file: &File<'_>) -> Style {
+            Fixed(19).normal()
+        }
+
+        fn style_override(&self, _file: &File<'_>) -> Option<FileNameStyle> {
+            Some(FileNameStyle {
+                icon: Some(IconStyle {
+                    glyph: Some('X'),
+                    style: Some(Fixed(20).normal()),
+                }),
+                filename: Some(Fixed(21).normal()),
+            })
+        }
+
+        fn icon_override(&self, _file: &File<'_>) -> Option<IconStyle> {
+            Some(IconStyle {
+                glyph: Some('D'),
+                style: None,
+            })
+        }
+    }
+
+    #[test]
+    fn directories_ignore_filename_style_and_icon_overrides() {
+        let root = std::env::temp_dir().join(format!(
+            "eva-dir-style-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let dir = root.join(".config");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("file"), "content").unwrap();
+
+        let old_cwd = std::env::current_dir().unwrap();
+        std::env::set_current_dir(&root).unwrap();
+        let file = File::from_args(".config".into(), None, None, false, false, None);
+        std::env::set_current_dir(old_cwd).unwrap();
+        let options = Options {
+            classify: Classify::JustFilenames,
+            show_icons: ShowIcons::Always(1),
+            quote_style: QuoteStyle::NoQuotes,
+            embed_hyperlinks: EmbedHyperlinks::Never,
+            absolute: Absolute::Off,
+            is_a_tty: true,
+        };
+
+        let painted = options.for_file(&file, &TestColours).paint();
+        let expected = TextCellContents::from(vec![
+            Fixed(4).paint("D"),
+            Fixed(4).paint(" "),
+            Fixed(4).paint(".config"),
+        ]);
+
+        assert_eq!(expected, painted);
+        std::fs::remove_dir_all(root).unwrap();
     }
 }

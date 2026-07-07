@@ -6,21 +6,21 @@ filekinds:
   executable:
     foreground: Green
 icons:
-  # Sparse defaults for built-in fallback icons. Named directory icons,
-  # filename overrides, and extension overrides still take precedence.
+  # Sparse defaults for built-in fallback icons. Directory icons are semantic;
+  # filename and extension overrides apply to files only.
   folder: { glyph: "" }
   empty_folder: { glyph: "" }
   file: { glyph: "" }
   unknown_file: { glyph: "" }
 git:
-  staged: { foreground: Green }
-  new: { foreground: Red }
-  modified: { foreground: Yellow }
-  deleted: { foreground: Red }
-  renamed: { foreground: Yellow }
-  typechange: { foreground: Yellow }
-  ignored: { foreground: DarkGray }
-  conflicted: { foreground: LightRed }
+  staged: { foreground: brightgreen }
+  new: { foreground: red }
+  modified: { foreground: yellow }
+  deleted: { foreground: red }
+  renamed: { foreground: yellow }
+  typechange: { foreground: yellow }
+  ignored: { foreground: brightblack }
+  conflicted: { foreground: brightred }
 git_markers:
   staged: "+"
   new: "?"
