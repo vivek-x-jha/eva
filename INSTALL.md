@@ -18,15 +18,23 @@ Eva v0.4.0 provides an unsigned Apple Silicon macOS binary on the GitHub release
 
 Extract the archive and move `eva` somewhere on your `PATH`.
 
-## Build from source
+## Install with Cargo
+
+Cargo users can install the latest Eva directly from GitHub:
+
+```sh
+cargo install --locked --git https://github.com/vivek-x-jha/eva
+```
+
+This installs the `eva` binary in your Cargo bin directory and lets `cargo install-update --git` update it later.
+
+## Build from a checkout
 
 ```sh
 git clone https://github.com/vivek-x-jha/eva.git
 cd eva
-cargo install --path .
+cargo install --locked --path .
 ```
-
-Cargo builds the `eva` binary and installs it in your Cargo bin directory, usually `$HOME/.cargo/bin`.
 
 ## Try without installing
 
