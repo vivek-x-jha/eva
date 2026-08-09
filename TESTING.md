@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Vivek Jha
+SPDX-License-Identifier: EUPL-1.2
+-->
+
 # Testing eva
 
 `eva` uses the upstream eza Rust test suite plus fork-specific tests for config and theme behavior.

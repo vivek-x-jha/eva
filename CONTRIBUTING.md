@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Vivek Jha
+SPDX-License-Identifier: EUPL-1.2
+-->
+
 # Contributing to eva
 
 `eva` is a personal fork of [`eza`](https://github.com/eza-community/eza).

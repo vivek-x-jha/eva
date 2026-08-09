@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Vivek Jha
+SPDX-License-Identifier: EUPL-1.2
+-->
+
 # AGENTS.md
 
 ## Scope
