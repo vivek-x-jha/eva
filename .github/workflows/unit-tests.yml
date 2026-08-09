@@ -48,6 +48,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   conventional:
     needs: [check_if_pr, no-merge-commits]
+    if: ${{ always() && needs.check_if_pr.result == 'success' && (needs.no-merge-commits.result == 'success' || needs.no-merge-commits.result == 'skipped') }}
     name: Conventional Commits
     runs-on: ubuntu-latest
     steps:

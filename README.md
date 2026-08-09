@@ -176,8 +176,7 @@ See the `man` pages for further documentation of usage. They are available
 <summary>Click to expand</summary>
 
 **Eva** supports a `theme.yml` file, where you can specify all of the existing theming options
-available for the `LS_COLORS` and `EVA_COLORS` environment variables, as well as the option to specify different icons
-for different file types and extensions. Legacy `EZA_*` and `EXA_*` environment variables continue to work as fallbacks.
+available for the `LS_COLORS` and `EVA_COLORS` environment variables, as well as filename, ordered glob pattern, extension, and icon overrides. Legacy `EZA_*` and `EXA_*` environment variables continue to work as fallbacks.
 
 #### **New** Pre-made themes
 Check out the themes available in the official [eza-themes](https://github.com/eza-community/eza-themes) repository, or contribute your own.
@@ -185,7 +184,7 @@ Check out the themes available in the official [eza-themes](https://github.com/e
 An example theme file is available in `docs/theme.yml`, and needs to either be placed in a directory specified by the 
 environment variable `EVA_CONFIG_DIR`, or will be looked for by default in `$XDG_CONFIG_HOME/eva` with a `$HOME/.config/eva` fallback. If no eva theme is found, eva also checks legacy `EZA_CONFIG_DIR`, `$XDG_CONFIG_HOME/eza`, and `$HOME/.config/eza` locations.
 
-Sparse icon defaults can be set without copying the full built-in icon map. Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename and extension overrides apply to files only, so names such as `.config` or `.cache` cannot steal directory icon/color precedence.
+Sparse icon defaults can be set without copying the full built-in icon map. Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename, pattern, and extension overrides apply to files only, so names such as `.config` or `.cache` cannot steal directory icon/color precedence. Exact names win over patterns; otherwise the last matching pattern wins before extension defaults.
 
 ```yaml
 icons:
@@ -193,6 +192,15 @@ icons:
   empty_folder: { glyph: "" }
   file: { glyph: "" }
   unknown_file: { glyph: "" }
+```
+
+```yaml
+patterns:
+  - pattern: "*.bash"
+    filename: { foreground: brightcyan }
+    icon: { glyph: "󰌶" }
+  - pattern: "Brewfile*"
+    filename: { foreground: brightmagenta }
 ```
 
 Git status markers can also be customized independently from their colors:

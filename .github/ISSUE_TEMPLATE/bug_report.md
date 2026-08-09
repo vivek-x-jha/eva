@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a crash, runtime error, or invalid output in eva
 title: 'bug: '
-labels: errors
+labels: 'type: bug'
 assignees: ''
 
 ---

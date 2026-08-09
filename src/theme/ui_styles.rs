@@ -33,6 +33,22 @@ pub struct IconTheme {
     pub unknown_file: Option<IconStyle>,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct FileNamePattern {
+    pub pattern: String,
+    pub icon: Option<IconStyle>,
+    pub filename: Option<Style>,
+}
+
+impl FileNamePattern {
+    pub fn style(&self) -> FileNameStyle {
+        FileNameStyle {
+            icon: self.icon,
+            filename: self.filename,
+        }
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct UiStyles {
@@ -64,6 +80,7 @@ pub struct UiStyles {
 
     pub icons: Option<IconTheme>,
     pub filenames: Option<HashMap<String, FileNameStyle>>,
+    pub patterns: Option<Vec<FileNamePattern>>,
     pub extensions: Option<HashMap<String, FileNameStyle>>,
 }
 // Macro to generate .unwrap_or_default getters for each field to cut down boilerplate
@@ -562,6 +579,7 @@ impl UiStyles {
 
             icons: None,
             filenames: None,
+            patterns: None,
             extensions: None,
         }
     }

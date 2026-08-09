@@ -11,6 +11,7 @@ Register-ArgumentCompleter -Native -CommandName 'eva' -ScriptBlock {
     $ArrayAbsolute       = @('on', 'follow', 'off')
     $ArrayTime           = @('modified', 'accessed', 'created')
     $ArrayTimeStyle      = @('default', 'iso', 'long-iso', 'full-iso', 'relative', '+%Y-%m-%d %H:%M', '+%Y.%m.%d %H:$M:$s')
+    $ArrayCodeMode       = @('lines', 'percent', 'both')
 
     $commandElements = $commandAst.CommandElements
     $command = @(
@@ -63,7 +64,17 @@ Register-ArgumentCompleter -Native -CommandName 'eva' -ScriptBlock {
             break
         }
         '*;--classify' {
-            $ArrayWhen | 
+            $ArrayWhen |
+            ForEach-Object {[System.Management.Automation.CompletionResult]::new($_, $_, "ParameterValue", $_)}
+            break
+        }
+        '*;--loc' {
+            $ArrayCodeMode |
+            ForEach-Object {[System.Management.Automation.CompletionResult]::new($_, $_, "ParameterValue", $_)}
+            break
+        }
+        '*;--code' {
+            $ArrayCodeMode |
             ForEach-Object {[System.Management.Automation.CompletionResult]::new($_, $_, "ParameterValue", $_)}
             break
         }
@@ -100,7 +111,9 @@ Register-ArgumentCompleter -Native -CommandName 'eva' -ScriptBlock {
         #   [CompletionResult]::new('-H'                         ,'links'               , [CompletionResultType]::ParameterName, 'list each file''s number of hard links')
             [CompletionResult]::new('--links'                    ,'links'               , [CompletionResultType]::ParameterName, 'list each file''s number of hard links') 
         #   [CompletionResult]::new('-i'                         ,'inode'               , [CompletionResultType]::ParameterName, 'list each file''s inode number')
-            [CompletionResult]::new('--inode'                    ,'inode'               , [CompletionResultType]::ParameterName, 'list each file''s inode number') 
+            [CompletionResult]::new('--inode'                    ,'inode'               , [CompletionResultType]::ParameterName, 'list each file''s inode number')
+            [CompletionResult]::new('--loc'                      ,'loc'                 , [CompletionResultType]::ParameterName, 'add lines-of-code and language columns')
+            [CompletionResult]::new('--code'                     ,'code'                , [CompletionResultType]::ParameterName, 'summarise lines of code by language')
         #   [CompletionResult]::new('-M'                         ,'mounts'              , [CompletionResultType]::ParameterName, 'show mount details (Linux and Mac only)')
         #   [CompletionResult]::new('--mounts'                   ,'mounts'              , [CompletionResultType]::ParameterName, 'show mount details (Linux and Mac only)') 
         #   [CompletionResult]::new('-n'                         ,'numeric'             , [CompletionResultType]::ParameterName, 'list numeric user and group IDs')
@@ -163,6 +176,7 @@ Register-ArgumentCompleter -Native -CommandName 'eva' -ScriptBlock {
         #   [CompletionResult]::new('--colour-scale-mode'        ,'colorscalemode'      , [CompletionResultType]::ParameterName, 'use gradient or fixed colors in --color-scale (fixed, gradient)')
             [CompletionResult]::new('--icons'                    ,'icons'               , [CompletionResultType]::ParameterName, 'when to display icons (always, auto, never)')
             [CompletionResult]::new('--no-quotes'                ,'noquotes'            , [CompletionResultType]::ParameterName, 'don''t quote file names with spaces')
+            [CompletionResult]::new('--short-nix'                ,'shortnix'            , [CompletionResultType]::ParameterName, 'abbreviate Nix store hashes in file names and paths')
             [CompletionResult]::new('--hyperlink'                ,'hyperlink'           , [CompletionResultType]::ParameterName, 'when to display entries as hyperlinks (always, auto, never)')
             [CompletionResult]::new('--absolute'                 ,'absolute'            , [CompletionResultType]::ParameterName, 'display entries with their absolute path (on, follow, off)')
             [CompletionResult]::new('--follow-symlinks'          ,'followsymlinks'      , [CompletionResultType]::ParameterName, 'drill down into symbolic links that point to directories')

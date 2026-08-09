@@ -7,8 +7,8 @@
 use crate::options::{Vars, vars};
 use crate::theme::ThemeFileType as FileType;
 use crate::theme::{
-    FileKinds, FileNameStyle, Git, GitMarkers, GitRepo, IconStyle, IconTheme, Links, Permissions,
-    SELinuxContext, SecurityContext, Size, UiStyles, Users,
+    FileKinds, FileNamePattern, FileNameStyle, Git, GitMarkers, GitRepo, IconStyle, IconTheme,
+    Links, Permissions, SELinuxContext, SecurityContext, Size, UiStyles, Users,
 };
 use nu_ansi_term::{Color, Style};
 use serde::{Deserialize, Deserializer, Serialize};
@@ -334,6 +334,23 @@ impl FromOverride<IconStyleOverride> for IconStyle {
 pub struct FileNameStyleOverride {
     pub icon: Option<IconStyleOverride>,
     pub filename: Option<StyleOverride>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct FileNamePatternOverride {
+    pub pattern: String,
+    pub icon: Option<IconStyleOverride>,
+    pub filename: Option<StyleOverride>,
+}
+
+impl From<FileNamePatternOverride> for FileNamePattern {
+    fn from(value: FileNamePatternOverride) -> Self {
+        Self {
+            pattern: value.pattern,
+            icon: FromOverride::from(value.icon, None),
+            filename: FromOverride::from(value.filename, None),
+        }
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
@@ -724,6 +741,7 @@ pub struct UiStylesOverride {
 
     pub icons: Option<IconThemeOverride>,
     pub filenames: Option<HashMap<String, FileNameStyleOverride>>,
+    pub patterns: Option<Vec<FileNamePatternOverride>>,
     pub extensions: Option<HashMap<String, FileNameStyleOverride>>,
 }
 
@@ -761,6 +779,10 @@ impl FromOverride<UiStylesOverride> for UiStyles {
 
             icons: FromOverride::from(value.icons, default.icons),
             filenames: FromOverride::from(value.filenames, default.filenames),
+            patterns: value
+                .patterns
+                .map(|patterns| patterns.into_iter().map(Into::into).collect())
+                .or(default.patterns),
             extensions: FromOverride::from(value.extensions, default.extensions),
         }
     }

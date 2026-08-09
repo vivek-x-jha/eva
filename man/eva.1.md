@@ -83,6 +83,11 @@ When used without a value, defaults to ‘`automatic`’.
 `-T`, `--tree`
 : Recurse into directories as a tree.
 
+`--code[=MODE]`
+: Print a lines-of-code summary by language instead of listing files, in the spirit of tools like `tokei` and `cloc`.
+
+: The given paths (or the current directory) are walked recursively, honouring a git repository’s `.gitignore` when one is present, and each recognised language is reported with its file, line, code, comment, and blank counts, plus a bar visualising its share of the code. Valid modes are ‘`lines`’, ‘`percent`’, and ‘`both`’ (the default).
+
 `--follow-symlinks`
 : Drill down into symbolic links that point to directories.
 
@@ -122,6 +127,11 @@ When used without a value, defaults to ‘`automatic`’.
 
 `--no-quotes`
 : Don't quote file names with spaces.
+
+`--short-nix`
+: Abbreviate Nix store hashes in file names and paths.
+
+: A path component beginning with a Nix store hash — exactly 32 characters of Nix’s base32 alphabet followed by a dash, like `vlkia5wk0svsikwv50554mh06iayg2m2-source.drv` — is displayed with the hash shortened to its first 8 characters and an ellipsis, painted dim so the name stands out: `vlkia5wk…-source.drv`. This applies to listed names, symbolic link targets, and absolute paths.
 
 `--hyperlink=WHEN`
 : Display entries as hyperlinks
@@ -220,6 +230,13 @@ These options are available when running with `--long` (`-l`):
 
 `-i`, `--inode`
 : List each file’s inode number.
+
+`--loc[=MODE]`
+: Add a language column and a lines-of-code column to the long view.
+
+: Only regular files in a recognised programming language are counted; counting is comment-aware, so the code column excludes comment and blank lines.
+
+: Valid modes are ‘`lines`’ (the count of code lines), ‘`percent`’ (each file’s share of the code in the whole tree), and ‘`both`’ (the default). In `percent` and `both` modes the denominator is the total code across the recursed tree, or the git repository if one is present.
 
 `-m`, `--modified`
 : Use the modified timestamp field.

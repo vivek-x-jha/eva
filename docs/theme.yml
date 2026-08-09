@@ -58,6 +58,13 @@ filenames:
   # Just change the icon glyph
   Cargo.toml: {icon: {glyph: 🦀}}
   Cargo.lock: {icon: {glyph: 🦀}}
+patterns:
+  # Ordered globs; the last matching pattern wins.
+  - pattern: "*.bash"
+    filename: {foreground: brightcyan}
+    icon: {glyph: "󰌶"}
+  - pattern: "Brewfile*"
+    filename: {foreground: brightmagenta}
 extensions:
   # Change the filename color and icon
   # NOTE: not all unicode glyphs support color changes

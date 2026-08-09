@@ -152,6 +152,7 @@ impl Default for UiStyles {
                 }),
             }),
             filenames: Some(default_filenames()),
+            patterns: None,
             extensions: Some(default_extensions()),
         }
     }

@@ -166,6 +166,12 @@ icons:
   file
   unknown_file
 
+filenames:
+
+patterns:
+
+extensions:
+
 punctuation:
 
 date:
@@ -221,7 +227,7 @@ security_context:
       is_hidden: true
 ```
 
-Icons can now be customized sparsely in the `icons`, `filenames`, and `extensions` fields.
+Icons can be customized sparsely in the `icons`, `filenames`, `patterns`, and `extensions` fields.
 
 `icons` controls built-in fallback icon buckets without requiring a copy of every filename or extension mapping:
 
@@ -233,16 +239,23 @@ icons:
   unknown_file: { glyph: "" }
 ```
 
-Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename and extension overrides apply to files only, so names such as `.config` or `.cache` cannot override directory icon or color precedence. Use `filenames` and `extensions` for exact per-name or per-extension file changes:
+Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename, pattern, and extension overrides apply to files only, so names such as `.config` or `.cache` cannot override directory icon or color precedence.
+
+`filenames` matches exact names, `patterns` is an ordered list of glob matches, and `extensions` matches the final extension. Exact names take precedence; otherwise the last matching pattern wins before extension defaults are considered.
 
 ```yaml
 filenames:
-  # Just change the icon glyph
   Cargo.toml: {icon: {glyph: 🦀}}
-  Cargo.lock: {icon: {glyph: 🦀}}
+
+patterns:
+  - pattern: "*.bash"
+    filename: {foreground: brightcyan}
+    icon: {glyph: "󰌶"}
+  - pattern: "Brewfile*"
+    filename: {foreground: brightmagenta}
 
 extensions:
-  rs: {  filename: {foreground: Red}, icon: {glyph: 🦀}}
+  rs: {filename: {foreground: Red}, icon: {glyph: 🦀}}
 ```
 
 Git status output uses one marker column. Staged entries use the `staged` marker and color; otherwise eva uses the unstaged status marker. The marker glyphs are configurable separately from styles:

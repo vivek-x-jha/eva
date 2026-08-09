@@ -2,19 +2,20 @@
 
 ## Scope
 
-- Describe what this project is and the boundaries agents should respect.
+- Eva is a personal Rust fork of `eza`; keep fork-specific changes narrow and easy to replay on upstream.
+- Preserve the `eva` binary/package name, `EVA_*` variables, eva config paths, release assets, man pages, and completions while retaining documented `EZA_*`/`EXA_*` fallbacks.
 
 ## Entry Points
 
-- Source: TODO
-- Tests: TODO
-- Docs: TODO
+- Source: `src/main.rs`, `src/lib.rs`; CLI parsing under `src/options`, rendering under `src/output`, filesystem behavior under `src/fs`, and theme handling under `src/theme`.
+- Tests: unit tests beside source, CLI snapshots in `tests/cmd`, generated integration snapshots in `tests/gen` and `tests/ptests`.
+- Docs: `README.md`, `INSTALL.md`, `TESTING.md`, `man/`, and `docs/theme.yml`.
 
 ## Commands
 
-- Install/setup: TODO
-- Validate: TODO
-- Test: TODO
+- Install/setup: `rustup show` (the pinned toolchain is read from `rust-toolchain.toml`), or `nix develop`.
+- Validate: `cargo fmt --all -- --check && cargo clippy --workspace --all-targets --all-features -- -D warnings`.
+- Test: `cargo test --workspace`; full Nix integration check: `just itest`.
 
 ## Rules
 

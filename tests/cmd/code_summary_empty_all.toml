@@ -1,0 +1,4 @@
+bin.name = "eva"
+args = "--code tests/itest-loc/empty"
+[env.add]
+LC_ALL = "C"

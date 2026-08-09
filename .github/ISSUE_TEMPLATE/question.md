@@ -2,7 +2,7 @@
 name: Question
 about: Ask a question about eva
 title: ''
-labels: question
+labels: 'type: question'
 assignees: ''
 
 ---

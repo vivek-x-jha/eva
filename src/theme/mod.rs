@@ -66,6 +66,31 @@ pub struct Definitions {
 pub struct Theme {
     pub ui: UiStyles,
     pub exts: Box<dyn FileStyle>,
+    patterns: Vec<(glob::Pattern, FileNameStyle)>,
+}
+
+impl Theme {
+    fn new(ui: UiStyles, exts: Box<dyn FileStyle>) -> Self {
+        use log::warn;
+
+        let patterns = ui
+            .patterns
+            .iter()
+            .flatten()
+            .filter_map(|entry| match glob::Pattern::new(&entry.pattern) {
+                Ok(pattern) => Some((pattern, entry.style())),
+                Err(error) => {
+                    warn!(
+                        "Couldn't parse theme glob pattern {:?}: {error}",
+                        entry.pattern
+                    );
+                    None
+                }
+            })
+            .collect();
+
+        Self { ui, exts, patterns }
+    }
 }
 
 impl Options {
@@ -76,7 +101,7 @@ impl Options {
         {
             let ui = UiStyles::plain();
             let exts = Box::new(NoFileStyle);
-            return Theme { ui, exts };
+            return Theme::new(ui, exts);
         }
 
         #[cfg(windows)]
@@ -88,7 +113,7 @@ impl Options {
             }
             let ui = UiStyles::plain();
             let exts = Box::new(NoFileStyle);
-            return Theme { ui, exts };
+            return Theme::new(ui, exts);
         }
 
         match self.theme_config {
@@ -102,7 +127,7 @@ impl Options {
                             (true, false) => Box::new(exts),
                             (true, true) => Box::new((exts, FileTypes)),
                         };
-                    return Theme { ui, exts };
+                    return Theme::new(ui, exts);
                 }
                 self.default_theme()
             }
@@ -119,7 +144,7 @@ impl Options {
             (true, false) => Box::new(exts),
             (true, true) => Box::new((exts, FileTypes)),
         };
-        Theme { ui, exts }
+        Theme::new(ui, exts)
     }
 }
 
@@ -482,6 +507,7 @@ impl FileNameColours for Theme {
     fn broken_filename(&self)     -> Style { apply_overlay(self.ui.broken_symlink(), self.ui.broken_path_overlay()) }
     fn control_char(&self)        -> Style { self.ui.control_char() }
     fn broken_control_char(&self) -> Style { apply_overlay(self.ui.control_char(),   self.ui.broken_path_overlay()) }
+    fn nix_hash(&self)            -> Style { self.ui.punctuation() }
     fn executable_file(&self)     -> Style { self.ui.filekinds.unwrap_or_default().executable() }
     fn mount_point(&self)         -> Style {
         let filekinds = self.ui.filekinds.unwrap_or_default();
@@ -500,11 +526,21 @@ impl FileNameColours for Theme {
                 return Some(*file_override);
             }
 
+        if let Some((_, file_override)) = self
+            .patterns
+            .iter()
+            .rev()
+            .find(|(pattern, _)| pattern.matches(&file.name))
+        {
+            return Some(*file_override);
+        }
+
         if let Some(ref ext_overrides) = self.ui.extensions
-            && let Some(ext) = file.ext.clone()
-                && let Some(file_override) = ext_overrides.get(&ext) {
-                    return Some(*file_override);
-                }
+            && let Some(ref ext) = file.ext
+            && let Some(file_override) = ext_overrides.get(ext)
+        {
+            return Some(*file_override);
+        }
 
         None
     }
@@ -604,6 +640,7 @@ mod customs_test {
                 ..UiStyles::default()
             },
             exts: Box::new(NoFileStyle),
+            patterns: Vec::new(),
         };
 
         assert_eq!(FileNameColours::mount_point(&theme), Fixed(4).normal());
@@ -621,9 +658,69 @@ mod customs_test {
                 ..UiStyles::default()
             },
             exts: Box::new(NoFileStyle),
+            patterns: Vec::new(),
         };
 
         assert_eq!(FileNameColours::mount_point(&theme), Fixed(5).normal());
+    }
+
+    #[test]
+    fn filename_patterns_are_ordered_between_names_and_extensions() {
+        let root = std::env::temp_dir().join(format!(
+            "eva-pattern-overrides-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(&root).unwrap();
+        std::fs::write(root.join("exact.bash"), "").unwrap();
+        std::fs::write(root.join("tool.bash"), "").unwrap();
+        std::fs::write(root.join("script.bash"), "").unwrap();
+        std::fs::write(
+            root.join("theme.yml"),
+            r#"
+filenames:
+  exact.bash: { filename: { foreground: red } }
+patterns:
+  - pattern: "*.bash"
+    filename: { foreground: blue }
+  - pattern: "tool.*"
+    filename: { foreground: yellow }
+extensions:
+  bash: { filename: { foreground: green } }
+"#,
+        )
+        .unwrap();
+
+        let ui = ThemeConfig::from_path(root.join("theme.yml"))
+            .to_theme()
+            .unwrap();
+        let theme = Theme::new(ui, Box::new(NoFileStyle));
+        let file =
+            |name| crate::fs::File::from_args(root.join(name), None, None, false, false, None);
+
+        assert_eq!(
+            FileNameColours::style_override(&theme, &file("exact.bash"))
+                .unwrap()
+                .filename,
+            Some(Red.normal())
+        );
+        assert_eq!(
+            FileNameColours::style_override(&theme, &file("tool.bash"))
+                .unwrap()
+                .filename,
+            Some(Yellow.normal())
+        );
+        assert_eq!(
+            FileNameColours::style_override(&theme, &file("script.bash"))
+                .unwrap()
+                .filename,
+            Some(Blue.normal())
+        );
+
+        std::fs::remove_dir_all(root).unwrap();
     }
 
     #[test]
@@ -667,6 +764,7 @@ mod customs_test {
                 ..UiStyles::default()
             },
             exts: Box::new(NoFileStyle),
+            patterns: Vec::new(),
         };
 
         let full = crate::fs::File::from_args(root.join("full"), None, None, false, false, None);

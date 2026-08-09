@@ -17,6 +17,7 @@ export extern "eva" [
     --colour-scale-mode        # Use gradient or fixed colors in --colour-scale
     --icons                    # When to display icons
     --no-quotes                # Don't quote file names with spaces
+    --short-nix                # Abbreviate Nix store hashes in file names and paths
     --hyperlink                # When to display entries as hyperlinks
     --absolute                 # Display entries with their absolute path
     --follow-symlinks          # Drill down into symbolic links that point to directories
@@ -40,6 +41,8 @@ export extern "eva" [
     --header(-h)               # Add a header row to each column
     --links(-H)                # List each file's number of hard links
     --inode(-i)                # List each file's inode number
+    --loc: string              # Add lines-of-code and language columns (lines, percent, both)
+    --code: string             # Summarise lines of code by language (lines, percent, both)
     --blocksize(-S)            # List each file's size of allocated file system blocks
     --time(-t) -d              # Which timestamp field to list
     --modified(-m)             # Use the modified timestamp field
