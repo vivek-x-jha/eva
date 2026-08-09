@@ -1,4 +1,4 @@
-A modern replacement for ls
+A personal fork of eza, a modern replacement for ls
 
 Usage: eva [OPTIONS] [FILE]...
 
