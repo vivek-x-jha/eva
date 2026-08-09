@@ -8,19 +8,19 @@ filekinds:
 icons:
   # Sparse defaults for built-in fallback icons. Directory icons are semantic;
   # filename and extension overrides apply to files only.
-  folder: { glyph: "" }
-  empty_folder: { glyph: "" }
-  file: { glyph: "" }
-  unknown_file: { glyph: "" }
+  folder: {glyph: ""}
+  empty_folder: {glyph: ""}
+  file: {glyph: ""}
+  unknown_file: {glyph: ""}
 git:
-  staged: { foreground: brightgreen }
-  new: { foreground: red }
-  modified: { foreground: yellow }
-  deleted: { foreground: red }
-  renamed: { foreground: yellow }
-  typechange: { foreground: yellow }
-  ignored: { foreground: brightblack }
-  conflicted: { foreground: brightred }
+  staged: {foreground: brightgreen}
+  new: {foreground: red}
+  modified: {foreground: yellow}
+  deleted: {foreground: red}
+  renamed: {foreground: yellow}
+  typechange: {foreground: yellow}
+  ignored: {foreground: brightblack}
+  conflicted: {foreground: brightred}
 git_markers:
   staged: "+"
   new: "?"
@@ -62,7 +62,7 @@ patterns:
   # Ordered globs; the last matching pattern wins.
   - pattern: "*.bash"
     filename: {foreground: brightcyan}
-    icon: {glyph: "󰌶"}
+    icon: {glyph: "\U000F0336"}
   - pattern: "Brewfile*"
     filename: {foreground: brightmagenta}
 extensions:

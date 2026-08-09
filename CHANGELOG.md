@@ -6,7 +6,7 @@ SPDX-License-Identifier: EUPL-1.2
 -->
 # Changelog
 
-## [0.4.0] - 2026-08-08
+## [0.4.0] - 2026-08-09
 
 ### Features
 
