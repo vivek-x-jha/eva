@@ -22,33 +22,22 @@ jobs:
       - uses: taiki-e/install-action@cargo-deny
       - name: Scan for vulnerabilities
         run: cargo deny check
-  check_if_pr:
-    runs-on: ubuntu-latest
-    outputs:
-      is_pr: ${{ steps.check.outputs.is_pr }}
-    steps:
-      - name: Check if it's a PR
-        id: check
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "is_pr=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_pr=false" >> $GITHUB_OUTPUT
-          fi
   no-merge-commits:
-    needs: check_if_pr
-    if: needs.check_if_pr.outputs.is_pr == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        if: github.event_name == 'pull_request'
         uses: actions/checkout@v6
-      - name: Run test
+      - name: Check pull request history
+        if: github.event_name == 'pull_request'
         uses: NexusPHP/no-merge-commits@v2.2.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Skip outside pull requests
+        if: github.event_name != 'pull_request'
+        run: echo "Merge commit check only applies to pull requests"
   conventional:
-    needs: [check_if_pr, no-merge-commits]
-    if: ${{ always() && needs.check_if_pr.result == 'success' && (needs.no-merge-commits.result == 'success' || needs.no-merge-commits.result == 'skipped') }}
+    needs: no-merge-commits
     name: Conventional Commits
     runs-on: ubuntu-latest
     steps:
