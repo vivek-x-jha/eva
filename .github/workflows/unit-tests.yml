@@ -43,6 +43,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: webiny/action-conventional-commits@v1.3.0
+        with:
+          allowed-commit-types: feat,fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip,release
   unit-tests:
     needs: conventional
     runs-on: ${{ matrix.os }}
