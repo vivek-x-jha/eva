@@ -7,7 +7,16 @@ SPDX-License-Identifier: EUPL-1.2
 
 # Installing eva
 
-`eva` is a personal fork of `eza`. Prebuilt distribution packages are not published yet for this fork.
+`eva` is a personal fork of `eza`.
+
+## Prebuilt binary
+
+Eva v0.4.0 provides an unsigned Apple Silicon macOS binary on the GitHub release page:
+
+- `eva_aarch64-apple-darwin.tar.gz`
+- `eva_aarch64-apple-darwin.tar.gz.sha256`
+
+Extract the archive and move `eva` somewhere on your `PATH`.
 
 ## Build from source
 
