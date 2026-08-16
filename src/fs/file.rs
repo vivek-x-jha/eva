@@ -785,6 +785,35 @@ impl<'dir> File<'dir> {
         }
     }
 
+    /// Whether this directory has no entries other than known desktop metadata files.
+    pub(crate) fn is_empty_for_icon(&self) -> bool {
+        if !self.is_directory() {
+            return false;
+        }
+
+        let Ok(entries) = std::fs::read_dir(&self.path) else {
+            return false;
+        };
+
+        entries.into_iter().all(|entry| {
+            let Ok(entry) = entry else {
+                return false;
+            };
+            let Ok(file_type) = entry.file_type() else {
+                return false;
+            };
+            if !file_type.is_file() {
+                return false;
+            }
+
+            match entry.file_name().to_str() {
+                Some(".DS_Store" | "Icon\r" | ".directory") => true,
+                Some(".localized") => entry.metadata().is_ok_and(|metadata| metadata.len() == 0),
+                _ => false,
+            }
+        })
+    }
+
     /// Converts a `SystemTime` to a `NaiveDateTime` without panicking.
     ///
     /// Fixes #655 and #667 in `Self::modified_time`, `Self::accessed_time` and
@@ -1134,5 +1163,77 @@ mod filename_test {
     #[cfg(unix)]
     fn topmost() {
         assert_eq!("/", File::filename(Path::new("/")));
+    }
+}
+
+#[cfg(test)]
+mod empty_dir_test {
+    use super::File;
+
+    #[test]
+    fn icon_emptiness_ignores_only_known_desktop_metadata_files() {
+        let root = std::env::temp_dir().join(format!(
+            "eva-empty-directory-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let empty = root.join("empty");
+        let metadata = root.join("metadata");
+        let payload = root.join("payload");
+        let nonempty_localized = root.join("nonempty-localized");
+        let unknown = root.join("unknown");
+        let named_directory = root.join("named-directory");
+
+        for directory in [
+            &empty,
+            &metadata,
+            &payload,
+            &nonempty_localized,
+            &unknown,
+            &named_directory,
+        ] {
+            std::fs::create_dir_all(directory).unwrap();
+        }
+
+        for name in [".DS_Store", ".directory"] {
+            std::fs::write(metadata.join(name), "metadata").unwrap();
+        }
+        #[cfg(unix)]
+        std::fs::write(metadata.join("Icon\r"), "metadata").unwrap();
+        std::fs::write(metadata.join(".localized"), "").unwrap();
+
+        std::fs::write(payload.join(".DS_Store"), "metadata").unwrap();
+        std::fs::write(payload.join("file"), "payload").unwrap();
+        std::fs::write(nonempty_localized.join(".localized"), "payload").unwrap();
+        std::fs::write(unknown.join(".gitkeep"), "").unwrap();
+        std::fs::create_dir(named_directory.join(".DS_Store")).unwrap();
+
+        #[cfg(unix)]
+        let named_symlink = {
+            use std::os::unix::fs::symlink;
+
+            let directory = root.join("named-symlink");
+            std::fs::create_dir(&directory).unwrap();
+            std::fs::write(root.join("target"), "metadata").unwrap();
+            symlink(root.join("target"), directory.join(".DS_Store")).unwrap();
+            directory
+        };
+
+        let file = |path| File::from_args(path, None, None, false, false, None);
+
+        assert!(file(empty).is_empty_for_icon());
+        assert!(!file(metadata.clone()).is_empty_dir());
+        assert!(file(metadata).is_empty_for_icon());
+        assert!(!file(payload).is_empty_for_icon());
+        assert!(!file(nonempty_localized).is_empty_for_icon());
+        assert!(!file(unknown).is_empty_for_icon());
+        assert!(!file(named_directory).is_empty_for_icon());
+        #[cfg(unix)]
+        assert!(!file(named_symlink).is_empty_for_icon());
+
+        std::fs::remove_dir_all(root).unwrap();
     }
 }

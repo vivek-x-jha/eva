@@ -1082,7 +1082,7 @@ pub enum IconKind {
 /// Classify which built-in icon bucket a file would use.
 pub fn icon_kind_for_file(file: &File<'_>) -> IconKind {
     if file.points_to_directory() {
-        if file.is_empty_dir() {
+        if file.is_empty_for_icon() {
             IconKind::EmptyDirectory
         } else {
             IconKind::Directory

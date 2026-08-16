@@ -6,7 +6,8 @@ filekinds:
   executable:
     foreground: Green
 icons:
-  # Sparse defaults for built-in fallback icons. Directory icons are semantic;
+  # Sparse defaults for built-in fallback icons. Directories containing only
+  # .DS_Store, an empty .localized, Icon\r, or .directory metadata count as empty;
   # filename and extension overrides apply to files only.
   folder: {glyph: ""}
   empty_folder: {glyph: ""}

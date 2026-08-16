@@ -184,7 +184,7 @@ Check out the themes available in the official [eza-themes](https://github.com/e
 An example theme file is available in `docs/theme.yml`, and needs to either be placed in a directory specified by the 
 environment variable `EVA_CONFIG_DIR`, or will be looked for by default in `$XDG_CONFIG_HOME/eva` with a `$HOME/.config/eva` fallback. If no eva theme is found, eva also checks legacy `EZA_CONFIG_DIR`, `$XDG_CONFIG_HOME/eza`, and `$HOME/.config/eza` locations.
 
-Sparse icon defaults can be set without copying the full built-in icon map. Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename, pattern, and extension overrides apply to files only, so names such as `.config` or `.cache` cannot steal directory icon/color precedence. Exact names win over patterns; otherwise the last matching pattern wins before extension defaults.
+Sparse icon defaults can be set without copying the full built-in icon map. Directory icons are semantic: directories containing only `.DS_Store`, an empty `.localized`, `Icon\r`, or `.directory` metadata files count as empty; all other non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename, pattern, and extension overrides apply to files only, so names such as `.config` or `.cache` cannot steal directory icon/color precedence. Exact names win over patterns; otherwise the last matching pattern wins before extension defaults.
 
 ```yaml
 icons:

@@ -736,6 +736,7 @@ extensions:
         std::fs::create_dir_all(root.join("full")).unwrap();
         std::fs::write(root.join("full/file"), "content").unwrap();
         std::fs::create_dir_all(root.join("empty")).unwrap();
+        std::fs::write(root.join("empty/.DS_Store"), "metadata").unwrap();
         std::fs::create_dir_all(root.join("src")).unwrap();
         std::fs::write(root.join("src/file"), "content").unwrap();
         std::fs::write(root.join("plain.unknownext"), "content").unwrap();

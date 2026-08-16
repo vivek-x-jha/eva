@@ -239,7 +239,7 @@ icons:
   unknown_file: { glyph: "" }
 ```
 
-Directory icons are semantic: all non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename, pattern, and extension overrides apply to files only, so names such as `.config` or `.cache` cannot override directory icon or color precedence.
+Directory icons are semantic: directories containing only `.DS_Store`, an empty `.localized`, `Icon\r`, or `.directory` metadata files count as empty; all other non-empty directories use `folder`, and empty directories use `empty_folder` when set, otherwise `folder`. Filename, pattern, and extension overrides apply to files only, so names such as `.config` or `.cache` cannot override directory icon or color precedence.
 
 `filenames` matches exact names, `patterns` is an ordered list of glob matches, and `extensions` matches the final extension. Exact names take precedence; otherwise the last matching pattern wins before extension defaults are considered.
 
